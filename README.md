@@ -1,2 +1,2 @@
 # FsContainer
-Yet another DI container
+Yet another IoC container
