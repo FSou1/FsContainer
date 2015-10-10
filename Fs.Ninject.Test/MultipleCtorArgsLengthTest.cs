@@ -56,7 +56,7 @@ namespace Fs.Ninject.Test
             var instance = container.Get<IRule>();
 
             // Assert
-            Assert.IsNotNull(instance, null);
+            Assert.IsNotNull(instance);
             Assert.AreEqual(instance.GetMessage(), argument);
             Assert.AreEqual(instance.GetNumber(), number);
         }
@@ -75,7 +75,7 @@ namespace Fs.Ninject.Test
             var instance = container.Get<IRule>();
 
             // Assert
-            Assert.IsNotNull(instance, null);
+            Assert.IsNotNull(instance);
             Assert.AreEqual(instance.GetMessage(), argument);
             Assert.AreEqual(instance.GetNumber(), 0);
         }
