@@ -51,9 +51,17 @@ namespace Fs.Container {
 
         public object CreateInstance(BindingBuilder builder) {
             var concrete = builder._concrete;
+            var lifetimeManager = builder._lifetime;
             var arguments = builder._arguments ?? new Dictionary<string, object>();
 
-            return CreateInstance(concrete, arguments);
+            var exist = lifetimeManager.GetValue();
+
+            if (exist == null) {
+                exist = CreateInstance(concrete, arguments);
+                lifetimeManager.SetValue(exist);
+            }
+
+            return exist;
         }
 
         public object CreateInstance(Type concrete) {

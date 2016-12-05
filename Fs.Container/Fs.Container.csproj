@@ -43,6 +43,9 @@
     <Compile Include="BindingBuilder.cs" />
     <Compile Include="ConstructorScorer.cs" />
     <Compile Include="FsContainer.cs" />
+    <Compile Include="Lifetime\ContainerControlledLifetimeManager.cs" />
+    <Compile Include="Lifetime\ILifetimeManager.cs" />
+    <Compile Include="Lifetime\TransientLifetimeManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

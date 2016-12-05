@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Fs.Container.Lifetime;
+using System;
 using System.Collections.Generic;
 
 namespace Fs.Container {
     public class BindingBuilder {
         internal Type _service;
         internal Type _concrete;
+        internal ILifetimeManager _lifetime;
         internal Dictionary<string, object> _arguments;
 
         public BindingBuilder(Type service) {
@@ -12,7 +14,12 @@ namespace Fs.Container {
         }
 
         public BindingBuilder Use<T>() {
+            return Use<T>(new TransientLifetimeManager());
+        }
+
+        public BindingBuilder Use<T>(ILifetimeManager lifetime) {
             _concrete = typeof(T);
+            _lifetime = lifetime;
             return this;
         }
 
@@ -21,6 +28,7 @@ namespace Fs.Container {
                 _arguments = new Dictionary<string, object>();
 
             _arguments[argumentName] = argumentValue;
+
             return this;
         }
     }
