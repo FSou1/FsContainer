@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fs.Container.Properties;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -22,9 +23,9 @@ namespace Fs.Container
                 .GetConstructors()
                 .OrderByDescending(Score)
                 .FirstOrDefault();
-
+            
             if (constructor == null) {
-                throw new Exception("Type does not have a parameterless constructor");
+                throw new Exception(Resources.ParameterlessConstructorNotFound);
             }
 
             return constructor;

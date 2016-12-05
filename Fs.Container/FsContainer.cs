@@ -8,6 +8,19 @@ using System.Threading.Tasks;
 
 namespace Fs.Container {
     public class FsContainer {
+        private readonly FsContainer parent;
+
+        /// <summary>
+        /// Create a default <see cref="FsContainer"/>
+        /// </summary>
+        public FsContainer() 
+            : this(null) { }
+
+        private FsContainer(FsContainer parent)
+        {
+            this.parent = parent;
+        }
+
         internal List<BindingBuilder> _bindingBuilders = new List<BindingBuilder>();
 
         public T Resolve<T>() {
@@ -22,6 +35,19 @@ namespace Fs.Container {
 
             return CreateInstance(type);
         }
+
+        #region Child container
+        public FsContainer Parent {
+            get { return parent; }
+        }
+
+        public FsContainer CreateChildContainer()
+        {
+            var child = new FsContainer(this);
+
+            return child;
+        }
+        #endregion
 
         public object CreateInstance(BindingBuilder builder) {
             var concrete = builder._concrete;

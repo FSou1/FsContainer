@@ -241,18 +241,5 @@ namespace Fs.Container.Test {
             // Assert
             Assert.AreNotEqual(validator, null);
         }
-
-        [TestMethod]
-        public void TestDefaultResolve() {
-            // Act
-            var container = new FsContainer();
-            container.For<IValidator>().Use<Validator>();
-
-            // Arrange
-            var validator = container.Resolve<IValidator>();
-
-            // Assert
-            Assert.AreNotEqual(validator, null);
-        }
     }
 }
