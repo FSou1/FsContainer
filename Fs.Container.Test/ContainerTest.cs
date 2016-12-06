@@ -1,10 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Fs.Container.Test.TestObjects;
 
 namespace Fs.Container.Test {
-    internal interface IValidator { }
-    internal class Validator : IValidator {}
-
     internal interface ICustomerService {}
     internal class CustomerService : ICustomerService {
         private readonly IValidator _validator;
@@ -240,6 +238,58 @@ namespace Fs.Container.Test {
 
             // Assert
             Assert.AreNotEqual(validator, null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void TestNotAssignableInterfaceTypesThrowNotAssignableException()
+        {
+            // Act
+            var container = new FsContainer();
+            container.For<ILogger>().Use<Validator>();
+
+            // Arrange
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void TestNotAssignableBaseClassTypesThrowNotAssignableException()
+        {
+            // Act
+            var container = new FsContainer();
+            container.For<DbLogger>().Use<Logger>();
+
+            // Arrange
+        }
+
+        [TestMethod]
+        public void TestBaseClassInheritanceAreAssignableTypes()
+        {
+            // Act
+            var container = new FsContainer();
+            container.For<Logger>().Use<DbLogger>();
+
+            // Arrange
+            var logger = container.Resolve<Logger>();
+
+            // Assert
+            Assert.IsNotNull(logger);
+            Assert.IsInstanceOfType(logger, typeof(DbLogger));
+        }
+
+        [TestMethod]
+        public void TestInterfaceInheritanceAreAssignableTypes()
+        {
+            // Act
+            var container = new FsContainer();
+            container.For<ILogger>().Use<DbLogger>();
+
+            // Arrange
+            var logger = container.Resolve<ILogger>();
+
+            // Assert
+            Assert.IsNotNull(logger);
+            Assert.IsInstanceOfType(logger, typeof(DbLogger));
         }
     }
 }

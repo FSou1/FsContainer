@@ -123,4 +123,7 @@
   <data name="ParameterlessConstructorNotFound" xml:space="preserve">
     <value>Type does not have a parameterless constructor</value>
   </data>
+  <data name="TypesAreNotAssignable" xml:space="preserve">
+    <value>The type {1} cannot be assigned to variables of type {0}.</value>
+  </data>
 </root>

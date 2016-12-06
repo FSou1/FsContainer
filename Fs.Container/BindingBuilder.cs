@@ -1,4 +1,5 @@
 ﻿using Fs.Container.Lifetime;
+using Fs.Container.Utility;
 using System;
 using System.Collections.Generic;
 
@@ -18,8 +19,13 @@ namespace Fs.Container {
         }
 
         public BindingBuilder Use<T>(ILifetimeManager lifetime) {
+            Guard.ArgumentNotNull(lifetime, nameof(lifetime));
+            
             _concrete = typeof(T);
             _lifetime = lifetime;
+
+            Guard.TypeIsAssignable(_service, _concrete);
+
             return this;
         }
 

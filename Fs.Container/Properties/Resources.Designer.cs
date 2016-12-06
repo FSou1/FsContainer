@@ -77,5 +77,14 @@ namespace Fs.Container.Properties {
                 return ResourceManager.GetString("ParameterlessConstructorNotFound", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type {1} cannot be assigned to variables of type {0}..
+        /// </summary>
+        internal static string TypesAreNotAssignable {
+            get {
+                return ResourceManager.GetString("TypesAreNotAssignable", resourceCulture);
+            }
+        }
     }
 }
