@@ -22,7 +22,7 @@ namespace Fs.Container.Test
             // Assert
             Assert.IsNotNull(child);
             Assert.IsInstanceOfType(child, typeof(FsContainer));
-            Assert.AreEqual(child.Parent, container);
+            Assert.AreSame(child.Parent, container);
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace Fs.Container.Test
             Assert.IsNotNull(child1);
             Assert.IsInstanceOfType(child, typeof(FsContainer));
             Assert.IsInstanceOfType(child1, typeof(FsContainer));
-            Assert.AreNotEqual(child, child1);
+            Assert.AreNotSame(child, child1);
         }
     }
 }

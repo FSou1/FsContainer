@@ -85,7 +85,7 @@ namespace Fs.Container.Test {
 
             // Assert
             Assert.IsNotNull(instance, null);
-            Assert.AreEqual(instance.GetMessage(), message);
+            Assert.AreSame(instance.GetMessage(), message);
         }
 
         [TestMethod]

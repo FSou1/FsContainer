@@ -52,9 +52,11 @@
   <ItemGroup>
     <Compile Include="ContainerControlledLifetimeManagerTest.cs" />
     <Compile Include="ContainerTest.cs" />
+    <Compile Include="HierarchicalLifetimeManagerTest.cs" />
     <Compile Include="HierarchyTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestObjects\DbLogger.cs" />
+    <Compile Include="TestObjects\DisposableObject.cs" />
     <Compile Include="TestObjects\Logger.cs" />
     <Compile Include="TestObjects\Validator.cs" />
     <Compile Include="TransientLifetimeManagerTest.cs" />

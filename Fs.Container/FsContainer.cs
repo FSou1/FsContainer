@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Fs.Container {
-    public class FsContainer {
+    public class FsContainer : IDisposable {
         private readonly FsContainer parent;
 
         /// <summary>
@@ -96,6 +96,25 @@ namespace Fs.Container {
             _bindingBuilders.Add(bindingBuilder);
 
             return bindingBuilder;
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Standard Dispose pattern implementation
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {                
+                //_bindingBuilders.OfType<IDisposable>().ForEach(b => b.Dispose());
+                _bindingBuilders.Clear();
+            }
         }
     }
 }
