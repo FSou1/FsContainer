@@ -40,7 +40,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BindingBuilder.cs" />
+    <Compile Include="Bindings\Binding.cs" />
+    <Compile Include="Bindings\BindingBuilder.cs" />
+    <Compile Include="BindingConfigurationBuilder.cs" />
+    <Compile Include="Bindings\BindingConfiguration.cs" />
+    <Compile Include="Bindings\IBinding.cs" />
+    <Compile Include="Bindings\IBindingConfiguration.cs" />
     <Compile Include="ConstructorScorer.cs" />
     <Compile Include="FsContainer.cs" />
     <Compile Include="Lifetime\ContainerControlledLifetimeManager.cs" />
@@ -53,6 +58,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Syntax\BindingRoot.cs" />
+    <Compile Include="Syntax\IBindingUseSyntax.cs" />
+    <Compile Include="Syntax\IBindingRoot.cs" />
+    <Compile Include="Syntax\IBindingWithSyntax.cs" />
     <Compile Include="Utility\Guard.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +70,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

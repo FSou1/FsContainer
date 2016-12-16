@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Fs.Container.Bindings;
+using Fs.Container.Syntax;
+using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Fs.Container {
-    public class FsContainer : IDisposable {
+    public class FsContainer : BindingRoot, IDisposable {
         private readonly FsContainer parent;
 
         /// <summary>
@@ -20,21 +22,21 @@ namespace Fs.Container {
         {
             this.parent = parent;
         }
-
-        internal List<BindingBuilder> _bindingBuilders = new List<BindingBuilder>();
-
+        
+        #region Resolve
         public T Resolve<T>() {
             return (T)Resolve(typeof (T));
         }
 
         public object Resolve(Type type) {
-            var builder = this._bindingBuilders.FirstOrDefault(t => t._service == type);
+            var builder = this.GetBindings(type).FirstOrDefault();
             if (builder != null) {
                 return CreateInstance(builder);
             }
 
             return CreateInstance(type);
         }
+        #endregion
 
         #region Child container
         public FsContainer Parent {
@@ -49,10 +51,11 @@ namespace Fs.Container {
         }
         #endregion
 
-        public object CreateInstance(BindingBuilder builder) {
-            var concrete = builder._concrete;
-            var lifetimeManager = builder._lifetime;
-            var arguments = builder._arguments ?? new Dictionary<string, object>();
+        public object CreateInstance(IBinding binding) {
+            var concrete = binding.Concrete;
+            var lifetimeManager = binding.Lifetime;
+            var arguments = binding.Arguments 
+                ?? new Dictionary<string, object>();
 
             var exist = lifetimeManager.GetValue();
 
@@ -89,15 +92,6 @@ namespace Fs.Container {
             return ctor.Invoke(arguments);
         }
 
-        public BindingBuilder For<T>() {
-            var type = typeof(T);
-            
-            var bindingBuilder = new BindingBuilder(type);
-            _bindingBuilders.Add(bindingBuilder);
-
-            return bindingBuilder;
-        }
-
         public void Dispose()
         {
             this.Dispose(true);
@@ -113,7 +107,7 @@ namespace Fs.Container {
             if (disposing)
             {                
                 //_bindingBuilders.OfType<IDisposable>().ForEach(b => b.Dispose());
-                _bindingBuilders.Clear();
+                //GetBindings().Clear();
             }
         }
     }
