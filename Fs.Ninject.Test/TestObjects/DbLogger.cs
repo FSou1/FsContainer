@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fs.Container.Lifetime
+namespace Fs.Ninject.Test.TestObjects
 {
-    public class HierarchicalLifetimeManager : ContainerControlledLifetimeManager
-    {        
+    internal class DbLogger : Logger
+    {
     }
 }

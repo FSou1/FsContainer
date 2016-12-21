@@ -2,9 +2,8 @@
 using Fs.Container.Syntax;
 using System.Collections;
 using System.Collections.Generic;
-using Fs.Container.Bindings;
 
-namespace Fs.Container
+namespace Fs.Container.Bindings
 {
     public class BindingConfigurationBuilder<T> : IBindingWithSyntax<T>
     {

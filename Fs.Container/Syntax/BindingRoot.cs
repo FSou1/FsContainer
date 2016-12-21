@@ -1,4 +1,5 @@
 ﻿using Fs.Container.Bindings;
+using Fs.Container.Lifetime;
 using Fs.Container.Utility;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,23 @@ namespace Fs.Container.Syntax
             return new BindingBuilder<T>(binding);
         }
 
+        public void AddBinding(IBinding binding)
+        {
+            Guard.ArgumentNotNull(binding, nameof(binding));
+            Bindings.Add(binding);
+        }
+
+        public IBinding CloneBinding(IBinding binding)
+        {
+            Guard.ArgumentNotNull(binding, nameof(binding));
+            var clone = new Binding(binding.Service, binding.Concrete, binding.Arguments, binding.Lifetime);
+            if (clone.Lifetime is HierarchicalLifetimeManager)
+            {
+                clone.Lifetime = new HierarchicalLifetimeManager();
+            }
+            return clone;
+        }
+
         protected IEnumerable<IBinding> GetBindings()
         {
             return this.Bindings;
@@ -28,13 +46,7 @@ namespace Fs.Container.Syntax
         protected IEnumerable<IBinding> GetBindings(Type service)
         {
             return this.Bindings.Where(t => t.Service == service);
-        }
-
-        private void AddBinding(IBinding binding)
-        {
-            Guard.ArgumentNotNull(binding, nameof(binding));
-            Bindings.Add(binding);
-        }
+        }        
 
         private IList<IBinding> Bindings { get; set; } = new List<IBinding>();
     }

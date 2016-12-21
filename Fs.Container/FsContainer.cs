@@ -1,4 +1,5 @@
 ﻿using Fs.Container.Bindings;
+using Fs.Container.Lifetime;
 using Fs.Container.Syntax;
 using System;
 using System.CodeDom;
@@ -46,7 +47,11 @@ namespace Fs.Container {
         public FsContainer CreateChildContainer()
         {
             var child = new FsContainer(this);
-
+            var bindings = this.GetBindings().ToList();            
+            foreach(var binding in bindings)
+            {
+                child.AddBinding(CloneBinding(binding));
+            }
             return child;
         }
         #endregion
@@ -106,8 +111,10 @@ namespace Fs.Container {
         {
             if (disposing)
             {                
-                //_bindingBuilders.OfType<IDisposable>().ForEach(b => b.Dispose());
-                //GetBindings().Clear();
+                foreach(var binding in GetBindings().OfType<IDisposable>())
+                {
+                    binding.Dispose();
+                }
             }
         }
     }

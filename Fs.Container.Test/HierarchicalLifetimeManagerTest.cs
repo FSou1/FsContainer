@@ -15,15 +15,15 @@ namespace Fs.Container.Test
         private FsContainer child1;
         private FsContainer child2;
         private FsContainer parent;
-
+        
         public HierarchicalLifetimeManagerTest()
         {
             parent = new FsContainer();
-            child1 = parent.CreateChildContainer();
-            child2 = parent.CreateChildContainer();
             parent.For<ILogger>().Use<Logger>(new HierarchicalLifetimeManager());
             parent.For<DisposableObject>()
                 .Use<DisposableObject>(new HierarchicalLifetimeManager());
+            child1 = parent.CreateChildContainer();
+            child2 = parent.CreateChildContainer();
         }
 
 
@@ -55,7 +55,7 @@ namespace Fs.Container.Test
         public void SiblingContainersResolveDifferentInstances()
         {
             var o1 = child1.Resolve<ILogger>();
-            var o2 = child1.Resolve<ILogger>();
+            var o2 = child2.Resolve<ILogger>();
             Assert.AreNotSame(o1, o2);
         }
 

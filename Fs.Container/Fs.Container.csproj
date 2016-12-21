@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="Bindings\Binding.cs" />
     <Compile Include="Bindings\BindingBuilder.cs" />
-    <Compile Include="BindingConfigurationBuilder.cs" />
+    <Compile Include="Bindings\BindingConfigurationBuilder.cs" />
     <Compile Include="Bindings\BindingConfiguration.cs" />
     <Compile Include="Bindings\IBinding.cs" />
     <Compile Include="Bindings\IBindingConfiguration.cs" />
