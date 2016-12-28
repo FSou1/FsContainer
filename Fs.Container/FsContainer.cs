@@ -1,4 +1,5 @@
 ﻿using Fs.Container.Bindings;
+using Fs.Container.Dispose;
 using Fs.Container.Lifetime;
 using Fs.Container.Syntax;
 using System;
@@ -13,6 +14,8 @@ namespace Fs.Container {
     public class FsContainer : BindingRoot, IDisposable {
         private readonly FsContainer parent;
 
+        private DisposeManager disposeManager;
+
         /// <summary>
         /// Create a default <see cref="FsContainer"/>
         /// </summary>
@@ -22,6 +25,12 @@ namespace Fs.Container {
         private FsContainer(FsContainer parent)
         {
             this.parent = parent;
+            if(parent != null)
+            {
+                parent.disposeManager.Add(this);
+            }
+
+            this.disposeManager = new DisposeManager();
         }
         
         #region Resolve
@@ -31,11 +40,14 @@ namespace Fs.Container {
 
         public object Resolve(Type type) {
             var builder = this.GetBindings(type).FirstOrDefault();
-            if (builder != null) {
-                return CreateInstance(builder);
-            }
+            var instance = builder != null ? CreateInstance(builder) : CreateInstance(type);
 
-            return CreateInstance(type);
+            if (!disposeManager.Contains(instance))
+            {
+                disposeManager.Add(instance);
+            }
+            
+            return instance;
         }
         #endregion
 
@@ -111,9 +123,15 @@ namespace Fs.Container {
         {
             if (disposing)
             {                
-                foreach(var binding in GetBindings().OfType<IDisposable>())
+                if(disposeManager != null)
                 {
-                    binding.Dispose();
+                    disposeManager.Dispose();
+                    disposeManager = null;
+
+                    if(parent?.disposeManager != null)
+                    {
+                        parent.disposeManager.Remove(this);
+                    }
                 }
             }
         }

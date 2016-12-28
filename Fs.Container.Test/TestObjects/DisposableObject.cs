@@ -9,6 +9,7 @@ namespace Fs.Container.Test.TestObjects
     public class DisposableObject : IDisposable
     {
         private bool wasDisposed = false;
+        private int disposeCount = 0;
 
         public bool WasDisposed
         {
@@ -16,9 +17,16 @@ namespace Fs.Container.Test.TestObjects
             set { wasDisposed = value; }
         }
 
+        public int DisposeCount
+        {
+            get { return disposeCount; }
+            set { disposeCount = value; }
+        }
+
         public void Dispose()
         {
             wasDisposed = true;
+            disposeCount += 1;
         }
     }
 }

@@ -26,7 +26,6 @@ namespace Fs.Container.Test
             child2 = parent.CreateChildContainer();
         }
 
-
         [TestMethod]
         public void ParentResolveActsLikeContainerControlledLifetime()
         {
@@ -64,10 +63,35 @@ namespace Fs.Container.Test
         {
             var o1 = parent.Resolve<DisposableObject>();
             var o2 = child1.Resolve<DisposableObject>();
+            var o3 = child1.Resolve<DisposableObject>();
 
             child1.Dispose();
             Assert.IsFalse(o1.WasDisposed);
             Assert.IsTrue(o2.WasDisposed);
+        }
+
+        [TestMethod]
+        public void DisposingOfParentContainerDisposesChildAndParentObject()
+        {
+            var o1 = parent.Resolve<DisposableObject>();
+            var o2 = child1.Resolve<DisposableObject>();
+
+            parent.Dispose();
+            Assert.IsTrue(o1.WasDisposed);
+            Assert.IsTrue(o2.WasDisposed);
+        }
+
+        [TestMethod]
+        public void MultipleResolvedInstanceDisposeOnlyOnce()
+        {
+            var o1 = parent.Resolve<DisposableObject>();
+            var o2 = parent.Resolve<DisposableObject>();
+
+            parent.Dispose();
+            Assert.IsTrue(o1.WasDisposed);
+            Assert.IsTrue(o2.WasDisposed);
+            Assert.AreEqual(o1.DisposeCount, 1);
+            Assert.AreEqual(o2.DisposeCount, 1);
         }
     }
 }
