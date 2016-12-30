@@ -52,11 +52,6 @@ namespace Fs.Container.Syntax
             return this.Bindings.Where(t => t.Service == service);
         }
 
-        protected IBinding GetBinding(Type service)
-        {
-            return this.Bindings.FirstOrDefault(t => t.Service == service);
-        }
-
-        private IList<IBinding> Bindings { get; set; } = new List<IBinding>();
+        private IList<IBinding> Bindings { get; } = new List<IBinding>();
     }
 }
