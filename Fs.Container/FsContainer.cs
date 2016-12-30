@@ -3,17 +3,14 @@ using Fs.Container.Dispose;
 using Fs.Container.Lifetime;
 using Fs.Container.Syntax;
 using System;
-using System.CodeDom;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+using Fs.Container.Resolve;
 
 namespace Fs.Container {
     public class FsContainer : BindingRoot, IDisposable {
         private readonly FsContainer parent;
 
+        private IBindingResolver _bindingResolver;
         private DisposeManager disposeManager;
 
         /// <summary>
@@ -29,8 +26,9 @@ namespace Fs.Container {
             {
                 parent.disposeManager.Add(this);
             }
-
+            
             this.disposeManager = new DisposeManager();
+            this._bindingResolver = new BindingResolver();
         }
         
         #region Resolve
@@ -38,9 +36,9 @@ namespace Fs.Container {
             return (T)Resolve(typeof (T));
         }
 
-        public object Resolve(Type type) {
-            var builder = this.GetBindings(type).FirstOrDefault();
-            var instance = builder != null ? CreateInstance(builder) : CreateInstance(type);
+        public object Resolve(Type type)
+        {
+            var instance = _bindingResolver.Resolve(this.GetBindings(), type);
 
             if (!disposeManager.Contains(instance))
             {
@@ -48,6 +46,12 @@ namespace Fs.Container {
             }
             
             return instance;
+        }
+
+        public IBindingResolver BindingResolver
+        {
+            get { return _bindingResolver; }
+            set { _bindingResolver = value; }
         }
         #endregion
 
@@ -68,47 +72,7 @@ namespace Fs.Container {
         }
         #endregion
 
-        public object CreateInstance(IBinding binding) {
-            var concrete = binding.Concrete;
-            var lifetimeManager = binding.Lifetime;
-            var arguments = binding.Arguments 
-                ?? new Dictionary<string, object>();
-
-            var exist = lifetimeManager.GetValue();
-
-            if (exist == null) {
-                exist = CreateInstance(concrete, arguments);
-                lifetimeManager.SetValue(exist);
-            }
-
-            return exist;
-        }
-
-        public object CreateInstance(Type concrete) {
-            if (concrete.GetConstructor(Type.EmptyTypes) != null) {
-                return Activator.CreateInstance(concrete);
-            }
-
-            return CreateInstance(concrete, new Dictionary<string, object>());
-        }
-
-        public object CreateInstance(Type concrete, IDictionary<string, object> constructorArguments) {
-            var ctor = new ConstructorScorer(concrete, constructorArguments).GetConstructor();
-
-            var parameters = ctor.GetParameters();
-            var arguments = new object[parameters.Length];
-            for (var i = 0; i < parameters.Length; i++) {
-                var parameter = parameters[i];
-                var argument = constructorArguments.ContainsKey(parameter.Name)
-                    ? constructorArguments[parameter.Name]
-                    : this.Resolve(parameter.ParameterType);
-
-                arguments[i] = argument;
-            }
-
-            return ctor.Invoke(arguments);
-        }
-
+        #region Dispose
         public void Dispose()
         {
             this.Dispose(true);
@@ -135,5 +99,6 @@ namespace Fs.Container {
                 }
             }
         }
+        #endregion
     }
 }

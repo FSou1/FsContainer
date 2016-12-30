@@ -14,8 +14,8 @@ namespace Fs.Container.Syntax
         public IBindingUseSyntax<T> For<T>()
         {
             var type = typeof(T);
-
             var binding = new Binding(type);
+
             this.AddBinding(binding);
 
             return new BindingBuilder<T>(binding);
@@ -24,17 +24,21 @@ namespace Fs.Container.Syntax
         public void AddBinding(IBinding binding)
         {
             Guard.ArgumentNotNull(binding, nameof(binding));
+
             Bindings.Add(binding);
         }
 
         public IBinding CloneBinding(IBinding binding)
         {
             Guard.ArgumentNotNull(binding, nameof(binding));
+
             var clone = new Binding(binding.Service, binding.Concrete, binding.Arguments, binding.Lifetime);
+
             if (clone.Lifetime is HierarchicalLifetimeManager)
             {
                 clone.Lifetime = new HierarchicalLifetimeManager();
             }
+
             return clone;
         }
 
@@ -46,7 +50,12 @@ namespace Fs.Container.Syntax
         protected IEnumerable<IBinding> GetBindings(Type service)
         {
             return this.Bindings.Where(t => t.Service == service);
-        }        
+        }
+
+        protected IBinding GetBinding(Type service)
+        {
+            return this.Bindings.FirstOrDefault(t => t.Service == service);
+        }
 
         private IList<IBinding> Bindings { get; set; } = new List<IBinding>();
     }

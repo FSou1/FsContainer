@@ -60,6 +60,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Resolve\BindingResolver.cs" />
+    <Compile Include="Resolve\IBindingResolver.cs" />
     <Compile Include="Syntax\BindingRoot.cs" />
     <Compile Include="Syntax\IBindingUseSyntax.cs" />
     <Compile Include="Syntax\IBindingRoot.cs" />

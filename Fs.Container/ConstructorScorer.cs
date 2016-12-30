@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Fs.Container
 {
-    internal class ConstructorScorer
+    public class ConstructorScorer
     {
         private readonly Type _concrete;
         private readonly IDictionary<string, object> _constructorArguments;

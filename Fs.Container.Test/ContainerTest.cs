@@ -58,7 +58,8 @@ namespace Fs.Container.Test {
         private readonly IContractService _contractService;
         private readonly IDocumentService _documentService;
 
-        public ContractController(ICustomerService customerService,
+        public ContractController(
+            ICustomerService customerService,
             IContractService contractService,
             IDocumentService documentService) {
             _customerService = customerService;
