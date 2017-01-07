@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Fs.Container</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <description>$description$</description>	
+    <authors>FSou1</authors>
+    <owners>FSou1</owners>	
+	<releaseNotes>Implemented hierarchical feature. Implemented lifetime managers. Implemented dispose manager. Implemented opportunity for custom binding resolver.</releaseNotes>
+    <projectUrl>https://github.com/FSou1/FsContainer</projectUrl>    
+	<licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
+    <copyright>© 2017</copyright>
+	<requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <tags>FSContainer IoC DI container dependency injection inversion control </tags>
+  </metadata>
+</package>
