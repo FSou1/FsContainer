@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using Fs.Container.Bindings;
+using Fs.Container.Lifetime;
 using Fs.Container.Utility;
 
 namespace Fs.Container.Resolve
@@ -14,43 +16,51 @@ namespace Fs.Container.Resolve
 
             var binding = bindings.FirstOrDefault(b => b.Service == service);
 
-            var instance = binding != null 
-                ? CreateInstance(bindings, binding) 
-                : CreateInstance(bindings, service);
+            var ctx = new BuildContext
+            {
+                Service = service,
+                Concrete = binding?.Concrete,
+                Lifetime = binding?.Lifetime,
+                Arguments = binding?.Arguments,
+                Bindings = bindings
+            };
+
+            return Build(ctx);
+        }
+
+        private object Build(BuildContext context)
+        {
+            Guard.ArgumentNotNull(context, nameof(context));
+
+            var exist = context.Lifetime?.GetValue();
+            if (exist != null)
+            {
+                return exist;
+            }
+
+            object instance;
+
+            if (context.Concrete == null)
+            {
+                instance = context.Service.GetConstructor(Type.EmptyTypes) != null 
+                    ? Activator.CreateInstance(context.Service)
+                    : CreateInstance(context);
+            } else {
+                instance = CreateInstance(context);
+            }
+
+            context.Lifetime?.SetValue(instance);
 
             return instance;
         }
 
-        public object CreateInstance(IEnumerable<IBinding> bindings, IBinding binding)
+        private object CreateInstance(BuildContext context)
         {
-            var concrete = binding.Concrete;
-            var lifetimeManager = binding.Lifetime;
-            var arguments = binding.Arguments
-                ?? new Dictionary<string, object>();
+            Guard.ArgumentNotNull(context, nameof(context));
 
-            var exist = lifetimeManager.GetValue();
+            var concrete = context.Concrete ?? context.Service;
+            var constructorArguments = context.Arguments ?? new Dictionary<string, object>();
 
-            if (exist == null)
-            {
-                exist = CreateInstance(bindings, concrete, arguments);
-                lifetimeManager.SetValue(exist);
-            }
-
-            return exist;
-        }
-
-        private object CreateInstance(IEnumerable<IBinding> bindings, Type concrete)
-        {
-            if (concrete.GetConstructor(Type.EmptyTypes) != null)
-            {
-                return Activator.CreateInstance(concrete);
-            }
-
-            return CreateInstance(bindings, concrete, new Dictionary<string, object>());
-        }
-
-        private object CreateInstance(IEnumerable<IBinding> bindings, Type concrete, IDictionary<string, object> constructorArguments)
-        {
             var ctor = new ConstructorScorer(concrete, constructorArguments).GetConstructor();
 
             var parameters = ctor.GetParameters();
@@ -60,12 +70,25 @@ namespace Fs.Container.Resolve
                 var parameter = parameters[i];
                 var argument = constructorArguments.ContainsKey(parameter.Name)
                     ? constructorArguments[parameter.Name]
-                    : this.Resolve(bindings, parameter.ParameterType);
+                    : Resolve(context.Bindings, parameter.ParameterType);
 
                 arguments[i] = argument;
             }
 
             return ctor.Invoke(arguments);
         }
+    }
+
+    public class BuildContext
+    {
+        public Type Service { get; set; }
+
+        public Type Concrete { get; set; }
+
+        public ILifetimeManager Lifetime { get; set; }
+
+        public IDictionary<string, object> Arguments { get; set; }
+
+        public IEnumerable<IBinding> Bindings { get; set; }
     }
 }

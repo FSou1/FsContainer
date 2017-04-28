@@ -5,6 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Fs.Container.Test.TestObjects {
-    public interface ILogger { }
-    public class Logger : ILogger { }
+    internal interface ILogger { }
+    internal class Logger : ILogger { }
 }

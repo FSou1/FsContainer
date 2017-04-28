@@ -6,21 +6,21 @@ using System.Threading.Tasks;
 
 namespace Fs.Container.Test.TestObjects
 {
-    public class DisposableObject : IDisposable
+    internal class DisposableObject : IDisposable
     {
         private bool wasDisposed = false;
         private int disposeCount = 0;
 
         public bool WasDisposed
         {
-            get { return wasDisposed; }
-            set { wasDisposed = value; }
+            get => wasDisposed;
+            set => wasDisposed = value;
         }
 
         public int DisposeCount
         {
-            get { return disposeCount; }
-            set { disposeCount = value; }
+            get => disposeCount;
+            set => disposeCount = value;
         }
 
         public void Dispose()
