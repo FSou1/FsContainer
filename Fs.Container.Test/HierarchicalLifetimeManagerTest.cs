@@ -63,7 +63,6 @@ namespace Fs.Container.Test
         {
             var o1 = parent.Resolve<DisposableObject>();
             var o2 = child1.Resolve<DisposableObject>();
-            var o3 = child1.Resolve<DisposableObject>();
 
             child1.Dispose();
             Assert.IsFalse(o1.WasDisposed);
