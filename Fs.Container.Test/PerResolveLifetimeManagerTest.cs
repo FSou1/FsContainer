@@ -27,5 +27,18 @@ namespace Fs.Container.Test
             Assert.IsNotNull(controller.Service.Mapper);
             Assert.AreSame(controller.Mapper, controller.Service.Mapper);
         }
+
+        [TestMethod]
+        public void TestPerResolveInstancesAreNotSame()
+        {
+            // Arrange
+            var firstController = container.Resolve<Controller>();
+            var secondController = container.Resolve<Controller>();
+            
+            // Assert
+            Assert.IsNotNull(firstController.Mapper);
+            Assert.IsNotNull(secondController.Mapper);
+            Assert.AreNotSame(firstController.Mapper, secondController.Mapper);
+        }
     }
 }

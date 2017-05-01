@@ -20,38 +20,43 @@ namespace Fs.Container.Resolve
             {
                 Service = service,
                 Concrete = binding?.Concrete,
-                Lifetime = binding?.Lifetime,
                 Arguments = binding?.Arguments,
                 Bindings = bindings
             };
 
-            return Build(ctx);
+            var exist = binding?.Lifetime?.GetValue();
+            if (exist != null)
+            {
+                return exist;
+            }
+
+            var instance = Build(ctx);
+
+            if(binding?.Lifetime is PerResolveLifetimeManager)
+            {
+                binding.Lifetime = new PerResolveLifetimeManager(instance);
+            }
+
+            binding?.Lifetime?.SetValue(instance);
+
+            return instance;
         }
 
         private object Build(BuildContext context)
         {
             Guard.ArgumentNotNull(context, nameof(context));
 
-            var exist = context.Lifetime?.GetValue();
-            if (exist != null)
+            if(context.Concrete != null)
             {
-                return exist;
+                return CreateInstance(context);
             }
 
-            object instance;
-
-            if (context.Concrete == null)
+            if(context.Service.GetConstructor(Type.EmptyTypes) == null)
             {
-                instance = context.Service.GetConstructor(Type.EmptyTypes) != null 
-                    ? Activator.CreateInstance(context.Service)
-                    : CreateInstance(context);
-            } else {
-                instance = CreateInstance(context);
+                return CreateInstance(context);
             }
 
-            context.Lifetime?.SetValue(instance);
-
-            return instance;
+            return Activator.CreateInstance(context.Service);
         }
 
         private object CreateInstance(BuildContext context)
@@ -84,9 +89,7 @@ namespace Fs.Container.Resolve
         public Type Service { get; set; }
 
         public Type Concrete { get; set; }
-
-        public ILifetimeManager Lifetime { get; set; }
-
+        
         public IDictionary<string, object> Arguments { get; set; }
 
         public IEnumerable<IBinding> Bindings { get; set; }

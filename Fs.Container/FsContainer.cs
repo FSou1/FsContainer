@@ -38,6 +38,14 @@ namespace Fs.Container {
 
         public object Resolve(Type type)
         {
+            foreach(var binding in this.GetBindings())
+            {
+                if(binding.Lifetime is PerResolveLifetimeManager)
+                {
+                    binding.Lifetime = new PerResolveLifetimeManager();
+                }
+            }
+
             var instance = _bindingResolver.Resolve(this.GetBindings(), type);
 
             if (!disposeManager.Contains(instance))
