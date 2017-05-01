@@ -32,7 +32,12 @@ namespace Fs.Container.Syntax
         {
             Guard.ArgumentNotNull(binding, nameof(binding));
 
-            var clone = new Binding(binding.Service, binding.Concrete, binding.Arguments, binding.Lifetime);
+            var clone = new Binding(
+                binding.Service, 
+                binding.Concrete, 
+                binding.Arguments, 
+                binding.Lifetime
+            );
 
             if (clone.Lifetime is HierarchicalLifetimeManager)
             {

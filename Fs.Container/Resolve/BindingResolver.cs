@@ -10,19 +10,40 @@ namespace Fs.Container.Resolve
 {
     public class BindingResolver : IBindingResolver
     {
+        public class ResolveContext
+        {
+            public IEnumerable<IBinding> Bindings { get; set; }
+        }
+
         public object Resolve(IEnumerable<IBinding> bindings, Type service)
         {
             Guard.ArgumentNotNull(bindings, nameof(bindings));
 
-            var binding = bindings.FirstOrDefault(b => b.Service == service);
-
-            var ctx = new BuildContext
+            foreach (var binding in bindings)
             {
-                Service = service,
-                Concrete = binding?.Concrete,
-                Arguments = binding?.Arguments,
+                if (binding.Lifetime is PerResolveLifetimeManager)
+                {
+                    binding.Lifetime = new PerResolveLifetimeManager();
+                }
+            }
+
+            var context = new ResolveContext
+            {                
                 Bindings = bindings
             };
+
+            return Resolve(context, service);
+        }
+
+        private object Resolve(ResolveContext context, Type service)
+        {
+            Guard.ArgumentNotNull(context, nameof(context));
+
+            var binding = context.Bindings.FirstOrDefault(b => b.Service == service);
+            if(binding == null)
+            {
+                binding = new Binding(service);
+            }
 
             var exist = binding?.Lifetime?.GetValue();
             if (exist != null)
@@ -30,7 +51,7 @@ namespace Fs.Container.Resolve
                 return exist;
             }
 
-            var instance = Build(ctx);
+            var instance = Build(context, binding);
 
             if(binding?.Lifetime is PerResolveLifetimeManager)
             {
@@ -42,29 +63,31 @@ namespace Fs.Container.Resolve
             return instance;
         }
 
-        private object Build(BuildContext context)
+        private object Build(ResolveContext context, IBinding binding)
         {
             Guard.ArgumentNotNull(context, nameof(context));
+            Guard.ArgumentNotNull(binding, nameof(binding));
 
-            if(context.Concrete != null)
+            if(binding.Concrete != null)
             {
-                return CreateInstance(context);
+                return CreateInstance(context, binding);
             }
 
-            if(context.Service.GetConstructor(Type.EmptyTypes) == null)
+            if(binding.Service.GetConstructor(Type.EmptyTypes) == null)
             {
-                return CreateInstance(context);
+                return CreateInstance(context, binding);
             }
 
-            return Activator.CreateInstance(context.Service);
+            return Activator.CreateInstance(binding.Service);
         }
 
-        private object CreateInstance(BuildContext context)
+        private object CreateInstance(ResolveContext context, IBinding binding)
         {
             Guard.ArgumentNotNull(context, nameof(context));
+            Guard.ArgumentNotNull(binding, nameof(binding));
 
-            var concrete = context.Concrete ?? context.Service;
-            var constructorArguments = context.Arguments ?? new Dictionary<string, object>();
+            var concrete = binding.Concrete ?? binding.Service;
+            var constructorArguments = binding.Arguments ?? new Dictionary<string, object>();
 
             var ctor = new ConstructorScorer(concrete, constructorArguments).GetConstructor();
 
@@ -75,23 +98,12 @@ namespace Fs.Container.Resolve
                 var parameter = parameters[i];
                 var argument = constructorArguments.ContainsKey(parameter.Name)
                     ? constructorArguments[parameter.Name]
-                    : Resolve(context.Bindings, parameter.ParameterType);
+                    : Resolve(context, parameter.ParameterType);
 
                 arguments[i] = argument;
             }
 
             return ctor.Invoke(arguments);
         }
-    }
-
-    public class BuildContext
-    {
-        public Type Service { get; set; }
-
-        public Type Concrete { get; set; }
-        
-        public IDictionary<string, object> Arguments { get; set; }
-
-        public IEnumerable<IBinding> Bindings { get; set; }
     }
 }
