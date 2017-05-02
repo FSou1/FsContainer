@@ -12,5 +12,6 @@ namespace Fs.Container.Bindings
         public Type Concrete {get; set;}
         public ILifetimeManager Lifetime {get; set;}
         public IDictionary<string, object> Arguments { get; set; }
+        public Func<FsContainer, object> FactoryFunc { get; set; }
     }
 }

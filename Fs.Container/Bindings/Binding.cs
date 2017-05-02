@@ -28,41 +28,26 @@ namespace Fs.Container.Bindings
 
         public Type Concrete
         {
-            get
-            {
-                return this.BindingConfiguration.Concrete;
-            }
-
-            set
-            {
-                this.BindingConfiguration.Concrete = value;
-            }
+            get => this.BindingConfiguration.Concrete;
+            set => this.BindingConfiguration.Concrete = value;
         }
 
         public ILifetimeManager Lifetime
         {
-            get
-            {
-                return this.BindingConfiguration.Lifetime;
-            }
-
-            set
-            {
-                this.BindingConfiguration.Lifetime = value;
-            }
+            get => this.BindingConfiguration.Lifetime;
+            set => this.BindingConfiguration.Lifetime = value;
         }
 
         public IDictionary<string, object> Arguments
         {
-            get
-            {
-                return this.BindingConfiguration.Arguments;
-            }
+            get => this.BindingConfiguration.Arguments;
+            set => this.BindingConfiguration.Arguments = value;
+        }
 
-            set
-            {
-                this.BindingConfiguration.Arguments = value;
-            }
+        public Func<FsContainer, object> FactoryFunc
+        {
+            get => this.BindingConfiguration.FactoryFunc;
+            set => this.BindingConfiguration.FactoryFunc = value;
         }
 
         public void Dispose()

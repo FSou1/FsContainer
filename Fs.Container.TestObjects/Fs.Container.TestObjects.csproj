@@ -55,6 +55,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="Mapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository.cs" />
     <Compile Include="Service.cs" />
     <Compile Include="Validator.cs" />
   </ItemGroup>

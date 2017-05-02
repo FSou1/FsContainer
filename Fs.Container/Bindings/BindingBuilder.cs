@@ -1,12 +1,11 @@
-﻿using Fs.Container.Lifetime;
+﻿using System;
+using Fs.Container.Lifetime;
 using Fs.Container.Syntax;
 using Fs.Container.Utility;
-using System;
-using System.Collections.Generic;
 
 namespace Fs.Container.Bindings {
     public class BindingBuilder<T> : IBindingUseSyntax<T> {
-        private IBinding _binding { get; set; }
+        private IBinding _binding { get; }
 
         public BindingBuilder(IBinding binding) {
             _binding = binding;
@@ -14,6 +13,19 @@ namespace Fs.Container.Bindings {
 
         public IBindingWithSyntax<T> Use<T>() {
             return Use<T>(new TransientLifetimeManager());
+        }
+
+        public void Use(Func<FsContainer, object> factoryFunc)
+        {
+            Use(factoryFunc, new TransientLifetimeManager());
+        }
+
+        public void Use(Func<FsContainer, object> factoryFunc, ILifetimeManager lifetimeManager)
+        {
+            Guard.ArgumentNotNull(factoryFunc, nameof(factoryFunc));
+
+            _binding.FactoryFunc = factoryFunc;
+            _binding.Lifetime = lifetimeManager;
         }
 
         public IBindingWithSyntax<T> Use<T>(ILifetimeManager lifetime) {

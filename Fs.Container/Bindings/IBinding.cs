@@ -10,6 +10,6 @@ namespace Fs.Container.Bindings
     public interface IBinding : IBindingConfiguration
     {
         Type Service { get; }
-        IBindingConfiguration BindingConfiguration { get; }        
+        IBindingConfiguration BindingConfiguration { get; }
     }
 }

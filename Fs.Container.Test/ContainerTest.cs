@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fs.Container.Test.TestObjects;
+using Fs.Container.TestObjects;
 
 namespace Fs.Container.Test {
     internal interface ICustomerService {}
@@ -61,7 +61,8 @@ namespace Fs.Container.Test {
         public ContractController(
             ICustomerService customerService,
             IContractService contractService,
-            IDocumentService documentService) {
+            IDocumentService documentService
+        ) {
             _customerService = customerService;
             _contractService = contractService;
             _documentService = documentService;

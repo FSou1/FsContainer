@@ -1,13 +1,8 @@
 ﻿using Fs.Container.Lifetime;
-using Fs.Container.Test.TestObjects;
+using Fs.Container.TestObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Fs.Container.Test {
+namespace Fs.Container.Test.Lifetime {
     [TestClass]
     public class ContainerControlledLifetimeManagerTest {
         private FsContainer child1;

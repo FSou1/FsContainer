@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using Fs.Container.Bindings;
 using Fs.Container.Resolve;
-using Fs.Container.Test.TestObjects;
+using Fs.Container.TestObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fs.Container.Test
 {
     [TestClass]
-    public class BindingResolversTest
+    public class BindingResolverTest
     {
         [TestMethod]
         [ExpectedException(typeof(CustomBindingBindingResolver.CustomBindingResolverException))]
@@ -29,7 +29,7 @@ namespace Fs.Container.Test
         {
             internal class CustomBindingResolverException : Exception { }
 
-            public object Resolve(IEnumerable<IBinding> bindings, Type service)
+            public object Resolve(FsContainer container, IEnumerable<IBinding> bindings, Type service)
             {
                 throw new CustomBindingResolverException();
             }

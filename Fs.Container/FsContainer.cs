@@ -38,7 +38,7 @@ namespace Fs.Container {
 
         public object Resolve(Type type)
         {
-            var instance = _bindingResolver.Resolve(this.GetBindings(), type);
+            var instance = _bindingResolver.Resolve(this, GetBindings(), type);
 
             if (!disposeManager.Contains(instance))
             {
@@ -50,15 +50,13 @@ namespace Fs.Container {
 
         public IBindingResolver BindingResolver
         {
-            get { return _bindingResolver; }
-            set { _bindingResolver = value; }
+            get => _bindingResolver;
+            set => _bindingResolver = value;
         }
         #endregion
 
         #region Child container
-        public FsContainer Parent {
-            get { return parent; }
-        }
+        public FsContainer Parent => parent;
 
         public FsContainer CreateChildContainer()
         {
