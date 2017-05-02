@@ -4,7 +4,7 @@ using Fs.Container.Syntax;
 using Fs.Container.Utility;
 
 namespace Fs.Container.Bindings {
-    public class BindingBuilder<T> : IBindingUseSyntax<T> {
+    public class BindingBuilder<T> : IBindingUseSyntax {
         private IBinding _binding { get; }
 
         public BindingBuilder(IBinding binding) {
@@ -15,12 +15,12 @@ namespace Fs.Container.Bindings {
             return Use<T>(new TransientLifetimeManager());
         }
 
-        public void Use(Func<FsContainer, object> factoryFunc)
+        public void Use(Func<IFsContainer, object> factoryFunc)
         {
             Use(factoryFunc, new TransientLifetimeManager());
         }
 
-        public void Use(Func<FsContainer, object> factoryFunc, ILifetimeManager lifetimeManager)
+        public void Use(Func<IFsContainer, object> factoryFunc, ILifetimeManager lifetimeManager)
         {
             Guard.ArgumentNotNull(factoryFunc, nameof(factoryFunc));
 

@@ -12,11 +12,11 @@ namespace Fs.Container.Resolve
     {
         public class ResolveContext
         {
-            public FsContainer Container { get; set; }
+            public IFsContainer Container { get; set; }
             public IEnumerable<IBinding> Bindings { get; set; }
         }
 
-        public object Resolve(FsContainer container, IEnumerable<IBinding> bindings, Type service)
+        public object Resolve(IFsContainer container, IEnumerable<IBinding> bindings, Type service)
         {
             Guard.ArgumentNotNull(bindings, nameof(bindings));
 

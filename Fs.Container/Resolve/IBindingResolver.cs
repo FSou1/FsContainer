@@ -6,6 +6,6 @@ namespace Fs.Container.Resolve
 {
     public interface IBindingResolver
     {
-        object Resolve(FsContainer container, IEnumerable<IBinding> bindings, Type service);
+        object Resolve(IFsContainer container, IEnumerable<IBinding> bindings, Type service);
     }
 }

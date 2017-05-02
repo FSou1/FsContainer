@@ -29,7 +29,7 @@ namespace Fs.Container.Test
         {
             internal class CustomBindingResolverException : Exception { }
 
-            public object Resolve(FsContainer container, IEnumerable<IBinding> bindings, Type service)
+            public object Resolve(IFsContainer container, IEnumerable<IBinding> bindings, Type service)
             {
                 throw new CustomBindingResolverException();
             }

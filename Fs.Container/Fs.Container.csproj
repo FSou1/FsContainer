@@ -51,6 +51,7 @@
     <Compile Include="Dispose\DisposeManager.cs" />
     <Compile Include="Dispose\IDisposeManager.cs" />
     <Compile Include="FsContainer.cs" />
+    <Compile Include="IFsContainer.cs" />
     <Compile Include="Lifetime\ContainerControlledLifetimeManager.cs" />
     <Compile Include="Lifetime\HierarchicalLifetimeManager.cs" />
     <Compile Include="Lifetime\ILifetimeManager.cs" />

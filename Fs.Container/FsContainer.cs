@@ -1,17 +1,15 @@
-﻿using Fs.Container.Bindings;
-using Fs.Container.Dispose;
-using Fs.Container.Lifetime;
+﻿using Fs.Container.Dispose;
 using Fs.Container.Syntax;
 using System;
 using System.Linq;
 using Fs.Container.Resolve;
 
 namespace Fs.Container {
-    public class FsContainer : BindingRoot, IDisposable {
+    public class FsContainer : BindingRoot, IFsContainer {
         private readonly FsContainer parent;
 
         private IBindingResolver _bindingResolver;
-        private DisposeManager disposeManager;
+        private DisposeManager _disposeManager;
 
         /// <summary>
         /// Create a default <see cref="FsContainer"/>
@@ -24,10 +22,10 @@ namespace Fs.Container {
             this.parent = parent;
             if(parent != null)
             {
-                parent.disposeManager.Add(this);
+                parent._disposeManager.Add(this);
             }
             
-            this.disposeManager = new DisposeManager();
+            this._disposeManager = new DisposeManager();
             this._bindingResolver = new BindingResolver();
         }
         
@@ -40,9 +38,9 @@ namespace Fs.Container {
         {
             var instance = _bindingResolver.Resolve(this, GetBindings(), type);
 
-            if (!disposeManager.Contains(instance))
+            if (!_disposeManager.Contains(instance))
             {
-                disposeManager.Add(instance);
+                _disposeManager.Add(instance);
             }
             
             return instance;
@@ -56,9 +54,9 @@ namespace Fs.Container {
         #endregion
 
         #region Child container
-        public FsContainer Parent => parent;
+        public IFsContainer Parent => parent;
 
-        public FsContainer CreateChildContainer()
+        public IFsContainer CreateChildContainer()
         {
             var child = new FsContainer(this);
             var bindings = this.GetBindings().ToList();            
@@ -85,14 +83,14 @@ namespace Fs.Container {
         {
             if (disposing)
             {                
-                if(disposeManager != null)
+                if(_disposeManager != null)
                 {
-                    disposeManager.Dispose();
-                    disposeManager = null;
+                    _disposeManager.Dispose();
+                    _disposeManager = null;
 
-                    if(parent?.disposeManager != null)
+                    if(parent?._disposeManager != null)
                     {
-                        parent.disposeManager.Remove(this);
+                        parent._disposeManager.Remove(this);
                     }
                 }
             }
