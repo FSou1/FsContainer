@@ -44,7 +44,7 @@ namespace Fs.Container.Bindings
             set => this.BindingConfiguration.Arguments = value;
         }
 
-        public Func<FsContainer, object> FactoryFunc
+        public Func<IFsContainer, object> FactoryFunc
         {
             get => this.BindingConfiguration.FactoryFunc;
             set => this.BindingConfiguration.FactoryFunc = value;

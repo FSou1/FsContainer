@@ -7,9 +7,9 @@ namespace Fs.Container.Test.Lifetime
     [TestClass]
     public class HierarchicalLifetimeManagerTest
     {
-        private FsContainer child1;
-        private FsContainer child2;
-        private FsContainer parent;
+        private IFsContainer child1;
+        private IFsContainer child2;
+        private IFsContainer parent;
         
         public HierarchicalLifetimeManagerTest()
         {

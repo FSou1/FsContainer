@@ -11,7 +11,7 @@ namespace Fs.Container.Syntax
 {
     public abstract class BindingRoot : IBindingRoot
     {
-        public IBindingUseSyntax<T> For<T>()
+        public IBindingUseSyntax For<T>()
         {
             var type = typeof(T);
             var binding = new Binding(type);

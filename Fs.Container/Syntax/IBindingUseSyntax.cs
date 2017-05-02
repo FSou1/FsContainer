@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace Fs.Container.Syntax
 {
-    public interface IBindingUseSyntax<T>
+    public interface IBindingUseSyntax
     {
         IBindingWithSyntax<T> Use<T>();
         IBindingWithSyntax<T> Use<T>(ILifetimeManager lifetimeManager);
 
-        void Use(Func<FsContainer, object> factoryFunc);
-        void Use(Func<FsContainer, object> factoryFunc, ILifetimeManager lifetimeManager);
+        void Use(Func<IFsContainer, object> factoryFunc);
+        void Use(Func<IFsContainer, object> factoryFunc, ILifetimeManager lifetimeManager);
     }
 }
