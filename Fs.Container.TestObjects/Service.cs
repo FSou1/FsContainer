@@ -1,4 +1,4 @@
-﻿namespace Fs.Container.Test.TestObjects
+﻿namespace Fs.Container.TestObjects
 {
     public class Service
     {

@@ -12,10 +12,11 @@ namespace Fs.Container.Resolve
     {
         public class ResolveContext
         {
+            public FsContainer Container { get; set; }
             public IEnumerable<IBinding> Bindings { get; set; }
         }
 
-        public object Resolve(IEnumerable<IBinding> bindings, Type service)
+        public object Resolve(FsContainer container, IEnumerable<IBinding> bindings, Type service)
         {
             Guard.ArgumentNotNull(bindings, nameof(bindings));
 
@@ -28,7 +29,8 @@ namespace Fs.Container.Resolve
             }
 
             var context = new ResolveContext
-            {                
+            {
+                Container = container,
                 Bindings = bindings
             };
 
@@ -45,7 +47,7 @@ namespace Fs.Container.Resolve
                 binding = new Binding(service);
             }
 
-            var exist = binding?.Lifetime?.GetValue();
+            var exist = binding.Lifetime?.GetValue();
             if (exist != null)
             {
                 return exist;
@@ -53,12 +55,12 @@ namespace Fs.Container.Resolve
 
             var instance = Build(context, binding);
 
-            if(binding?.Lifetime is PerResolveLifetimeManager)
+            if(binding.Lifetime is PerResolveLifetimeManager)
             {
                 binding.Lifetime = new PerResolveLifetimeManager(instance);
             }
 
-            binding?.Lifetime?.SetValue(instance);
+            binding.Lifetime?.SetValue(instance);
 
             return instance;
         }
@@ -67,6 +69,11 @@ namespace Fs.Container.Resolve
         {
             Guard.ArgumentNotNull(context, nameof(context));
             Guard.ArgumentNotNull(binding, nameof(binding));
+
+            if (binding.FactoryFunc != null)
+            {
+                return binding.FactoryFunc(context.Container);
+            }
 
             if(binding.Concrete != null)
             {

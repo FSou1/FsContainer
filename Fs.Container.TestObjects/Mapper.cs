@@ -1,6 +1,4 @@
-﻿using System.Dynamic;
-
-namespace Fs.Container.Test.TestObjects
+﻿namespace Fs.Container.TestObjects
 {
     public class Mapper : IMapper { }
 

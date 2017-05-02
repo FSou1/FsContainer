@@ -1,8 +1,8 @@
 ﻿using Fs.Container.Lifetime;
-using Fs.Container.Test.TestObjects;
+using Fs.Container.TestObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Fs.Container.Test
+namespace Fs.Container.Test.Lifetime
 {
     [TestClass]
     public class PerResolveLifetimeManagerTest
