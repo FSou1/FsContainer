@@ -50,6 +50,11 @@ namespace Fs.Container.Bindings
             set => this.BindingConfiguration.FactoryFunc = value;
         }
 
+        public Func<IFsContainer, Task<object>> FactoryFuncAsync {
+            get => this.BindingConfiguration.FactoryFuncAsync;
+            set => this.BindingConfiguration.FactoryFuncAsync = value;
+        }
+
         public void Dispose()
         {
             this.Dispose(true);

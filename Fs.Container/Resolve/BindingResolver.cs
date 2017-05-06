@@ -75,6 +75,10 @@ namespace Fs.Container.Resolve
                 return binding.FactoryFunc(context.Container);
             }
 
+            if (binding.FactoryFuncAsync != null) {
+                return binding.FactoryFuncAsync(context.Container).Result;
+            }
+
             if(binding.Concrete != null)
             {
                 return CreateInstance(context, binding);

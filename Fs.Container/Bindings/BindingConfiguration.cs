@@ -13,5 +13,6 @@ namespace Fs.Container.Bindings
         public ILifetimeManager Lifetime {get; set;}
         public IDictionary<string, object> Arguments { get; set; }
         public Func<IFsContainer, object> FactoryFunc { get; set; }
+        public Func<IFsContainer, Task<object>> FactoryFuncAsync { get; set; }
     }
 }
