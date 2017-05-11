@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Fs.Container.Bindings;
 using Fs.Container.Resolve;
 using Fs.Container.TestObjects;
@@ -31,6 +32,10 @@ namespace Fs.Container.Test
 
             public object Resolve(IFsContainer container, IEnumerable<IBinding> bindings, Type service)
             {
+                throw new CustomBindingResolverException();
+            }
+
+            public Task<object> ResolveAsync(IFsContainer container, IEnumerable<IBinding> bindings, Type service) {
                 throw new CustomBindingResolverException();
             }
         }

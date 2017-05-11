@@ -1,24 +1,23 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Fs.Container.TestObjects
 {
     public class Repository : IRepository
     {
-        public string ConnectionString { get; }
+        public IFakeDbConnection Connection { get; }
 
-        public static Task<IRepository> CreateInstanceAsync(string connectionString) {
-            return Task.FromResult<IRepository>(new Repository(connectionString));
+        public static async Task<IRepository> CreateInstanceAsync(IFakeDbConnection connection) {
+            await connection.EnsureOpenAsync();
+            return new Repository(connection);
         }
 
-        public Repository(string connectionString)
-        {
-            ConnectionString = connectionString;
+        public Repository(IFakeDbConnection connection) {
+            Connection = connection;
         }
     }
 
     public interface IRepository
     {
-        string ConnectionString { get; }
+        IFakeDbConnection Connection { get; }
     }
 }

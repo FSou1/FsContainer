@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using Fs.Container.Bindings;
 using Fs.Container.Lifetime;
 using Fs.Container.Utility;
@@ -20,6 +21,78 @@ namespace Fs.Container.Resolve
         {
             Guard.ArgumentNotNull(bindings, nameof(bindings));
 
+            var context = CreateContext(container, bindings);
+
+            return Resolve(context, service);
+        }
+
+        #region Async
+        public async Task<object> ResolveAsync(IFsContainer container, IEnumerable<IBinding> bindings, Type service) {
+            Guard.ArgumentNotNull(bindings, nameof(bindings));
+
+            var context = CreateContext(container, bindings);
+
+            return await ResolveAsync(context, service);
+        }
+
+        private async Task<object> ResolveAsync(ResolveContext context, Type service)
+        {
+            Guard.ArgumentNotNull(context, nameof(context));
+
+            var binding = context.Bindings.FirstOrDefault(b => b.Service == service);
+            if (binding == null)
+            {
+                binding = new Binding(service);
+            }
+
+            var exist = binding.Lifetime?.GetValue();
+            if (exist != null)
+            {
+                return exist;
+            }
+
+            var instance = await BuildAsync(context, binding);
+
+            if (binding.Lifetime is PerResolveLifetimeManager)
+            {
+                binding.Lifetime = new PerResolveLifetimeManager(instance);
+            }
+
+            binding.Lifetime?.SetValue(instance);
+
+            return instance;
+        }
+
+        private async Task<object> BuildAsync(ResolveContext context, IBinding binding)
+        {
+            Guard.ArgumentNotNull(context, nameof(context));
+            Guard.ArgumentNotNull(binding, nameof(binding));
+
+            if (binding.FactoryFunc != null)
+            {
+                return binding.FactoryFunc(context.Container);
+            }
+
+            if (binding.FactoryFuncAsync != null)
+            {
+                return await binding.FactoryFuncAsync(context.Container);
+            }
+
+            if (binding.Concrete != null)
+            {
+                return CreateInstance(context, binding);
+            }
+
+            if (binding.Service.GetConstructor(Type.EmptyTypes) == null)
+            {
+                return CreateInstance(context, binding);
+            }
+
+            return Activator.CreateInstance(binding.Service);
+        }
+        #endregion
+
+        private ResolveContext CreateContext(IFsContainer container, IEnumerable<IBinding> bindings) {
             foreach (var binding in bindings)
             {
                 if (binding.Lifetime is PerResolveLifetimeManager)
@@ -28,13 +101,11 @@ namespace Fs.Container.Resolve
                 }
             }
 
-            var context = new ResolveContext
+            return new ResolveContext
             {
                 Container = container,
                 Bindings = bindings
             };
-
-            return Resolve(context, service);
         }
 
         private object Resolve(ResolveContext context, Type service)
@@ -73,10 +144,6 @@ namespace Fs.Container.Resolve
             if (binding.FactoryFunc != null)
             {
                 return binding.FactoryFunc(context.Container);
-            }
-
-            if (binding.FactoryFuncAsync != null) {
-                return binding.FactoryFuncAsync(context.Container).Result;
             }
 
             if(binding.Concrete != null)

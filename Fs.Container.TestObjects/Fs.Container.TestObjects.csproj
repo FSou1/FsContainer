@@ -52,6 +52,7 @@
     <Compile Include="Controller.cs" />
     <Compile Include="DbLogger.cs" />
     <Compile Include="DisposableObject.cs" />
+    <Compile Include="FakeSqlConnection.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Mapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
