@@ -3,6 +3,7 @@ using Fs.Container.Syntax;
 using System;
 using System.Linq;
 using Fs.Container.Resolve;
+using System.Threading.Tasks;
 
 namespace Fs.Container {
     public class FsContainer : BindingRoot, IFsContainer {
@@ -33,6 +34,11 @@ namespace Fs.Container {
         public T Resolve<T>() {
             return (T)Resolve(typeof (T));
         }
+        
+        public async Task<T> ResolveAsync<T>()
+        {
+            return (T)(await ResolveAsync(typeof(T)));
+        }
 
         public object Resolve(Type type)
         {
@@ -43,6 +49,18 @@ namespace Fs.Container {
                 _disposeManager.Add(instance);
             }
             
+            return instance;
+        }
+
+        public async Task<object> ResolveAsync(Type type)
+        {
+            var instance = await _bindingResolver.ResolveAsync(this, GetBindings(), type);
+
+            if (!_disposeManager.Contains(instance))
+            {
+                _disposeManager.Add(instance);
+            }
+
             return instance;
         }
 

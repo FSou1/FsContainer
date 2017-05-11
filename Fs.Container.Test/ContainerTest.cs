@@ -243,6 +243,23 @@ namespace Fs.Container.Test {
         }
 
         [TestMethod]
+        public async void TestResolveAsyncResolvesInstance()
+        {
+            // Arrange
+            var container = new FsContainer();
+
+            container
+                .For<IRepository>()
+                .UseAsync(async ctx => await Repository.CreateInstanceAsync("sql_connection_string"));
+
+            // Act
+            var repository = await container.ResolveAsync<IRepository>();
+
+            // Arrange
+            Assert.AreEqual(repository.ConnectionString, "sql_connection_string");
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void TestNotAssignableInterfaceTypesThrowNotAssignableException()
         {

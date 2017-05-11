@@ -12,7 +12,7 @@ namespace Fs.Container.Test
     {
         [TestMethod]
         [ExpectedException(typeof(CustomBindingBindingResolver.CustomBindingResolverException))]
-        public void RegisteredServicesResolvedWithCustomBindingResolver()
+        public void TestRegisteredServicesResolvedWithCustomBindingResolver()
         {
             // Arrange
             var container = new FsContainer
@@ -24,7 +24,7 @@ namespace Fs.Container.Test
             // Act
             container.Resolve<IValidator>();
         }
-        
+
         internal class CustomBindingBindingResolver : IBindingResolver
         {
             internal class CustomBindingResolverException : Exception { }
