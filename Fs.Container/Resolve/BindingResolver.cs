@@ -17,6 +17,7 @@ namespace Fs.Container.Resolve
             public IEnumerable<IBinding> Bindings { get; set; }
         }
 
+        #region Sync
         public object Resolve(IFsContainer container, IEnumerable<IBinding> bindings, Type service)
         {
             Guard.ArgumentNotNull(bindings, nameof(bindings));
@@ -25,6 +26,58 @@ namespace Fs.Container.Resolve
 
             return Resolve(context, service);
         }
+
+        private object Resolve(ResolveContext context, Type service)
+        {
+            Guard.ArgumentNotNull(context, nameof(context));
+
+            var binding = context.Bindings.FirstOrDefault(b => b.Service == service);
+            if (binding == null)
+            {
+                binding = new Binding(service);
+            }
+
+            var exist = binding.Lifetime?.GetValue();
+            if (exist != null)
+            {
+                return exist;
+            }
+
+            var instance = Build(context, binding);
+
+            if (binding.Lifetime is PerResolveLifetimeManager)
+            {
+                binding.Lifetime = new PerResolveLifetimeManager(instance);
+            }
+
+            binding.Lifetime?.SetValue(instance);
+
+            return instance;
+        }
+
+        private object Build(ResolveContext context, IBinding binding)
+        {
+            Guard.ArgumentNotNull(context, nameof(context));
+            Guard.ArgumentNotNull(binding, nameof(binding));
+
+            if (binding.FactoryFunc != null)
+            {
+                return binding.FactoryFunc(context.Container);
+            }
+
+            if (binding.Concrete != null)
+            {
+                return CreateInstance(context, binding);
+            }
+
+            if (binding.Service.GetConstructor(Type.EmptyTypes) == null)
+            {
+                return CreateInstance(context, binding);
+            }
+
+            return Activator.CreateInstance(binding.Service);
+        }
+        #endregion
 
         #region Async
         public async Task<object> ResolveAsync(IFsContainer container, IEnumerable<IBinding> bindings, Type service) {
@@ -106,57 +159,6 @@ namespace Fs.Container.Resolve
                 Container = container,
                 Bindings = bindings
             };
-        }
-
-        private object Resolve(ResolveContext context, Type service)
-        {
-            Guard.ArgumentNotNull(context, nameof(context));
-
-            var binding = context.Bindings.FirstOrDefault(b => b.Service == service);
-            if(binding == null)
-            {
-                binding = new Binding(service);
-            }
-
-            var exist = binding.Lifetime?.GetValue();
-            if (exist != null)
-            {
-                return exist;
-            }
-
-            var instance = Build(context, binding);
-
-            if(binding.Lifetime is PerResolveLifetimeManager)
-            {
-                binding.Lifetime = new PerResolveLifetimeManager(instance);
-            }
-
-            binding.Lifetime?.SetValue(instance);
-
-            return instance;
-        }
-
-        private object Build(ResolveContext context, IBinding binding)
-        {
-            Guard.ArgumentNotNull(context, nameof(context));
-            Guard.ArgumentNotNull(binding, nameof(binding));
-
-            if (binding.FactoryFunc != null)
-            {
-                return binding.FactoryFunc(context.Container);
-            }
-
-            if(binding.Concrete != null)
-            {
-                return CreateInstance(context, binding);
-            }
-
-            if(binding.Service.GetConstructor(Type.EmptyTypes) == null)
-            {
-                return CreateInstance(context, binding);
-            }
-
-            return Activator.CreateInstance(binding.Service);
         }
 
         private object CreateInstance(ResolveContext context, IBinding binding)
