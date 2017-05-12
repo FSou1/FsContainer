@@ -26,7 +26,7 @@ namespace Fs.Container.Web.Test
         }
 
         [TestMethod]
-        public void TestPerSingleHttpRequestInstancesAlwaysSame()
+        public async Task TestPerSingleHttpRequestInstancesAlwaysSame()
         {
             // Arrange
             HttpContext.Current = new HttpContext(
@@ -34,9 +34,9 @@ namespace Fs.Container.Web.Test
                 new HttpResponse(new StringWriter())
             );
 
-            var controller = container.Resolve<Controller>();
-            var firstMapper = container.Resolve<IMapper>();
-            var secondMapper = container.Resolve<IMapper>();
+            var controller = await container.ResolveAsync<Controller>();
+            var firstMapper = await container.ResolveAsync<IMapper>();
+            var secondMapper = await container.ResolveAsync<IMapper>();
 
             // Assert
             Assert.IsNotNull(controller);
@@ -48,20 +48,20 @@ namespace Fs.Container.Web.Test
         }
 
         [TestMethod]
-        public void TestPerMultipleHttpRequestInstancesAlwaysDifferent()
+        public async Task TestPerMultipleHttpRequestInstancesAlwaysDifferent()
         {
             // Arrange
             HttpContext.Current = new HttpContext(
                 new HttpRequest("", "https://github.com/FSou1/FsContainer", ""),
                 new HttpResponse(new StringWriter())
             );
-            var firstMapper = container.Resolve<IMapper>();
+            var firstMapper = await container.ResolveAsync<IMapper>();
 
             HttpContext.Current = new HttpContext(
                 new HttpRequest("", "https://github.com/FSou1", ""),
                 new HttpResponse(new StringWriter())
             );
-            var secondMapper = container.Resolve<IMapper>();
+            var secondMapper = await container.ResolveAsync<IMapper>();
 
             // Assert
             Assert.IsNotNull(firstMapper);

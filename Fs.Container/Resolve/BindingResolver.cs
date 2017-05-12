@@ -16,76 +16,13 @@ namespace Fs.Container.Resolve
             public IFsContainer Container { get; set; }
             public IEnumerable<IBinding> Bindings { get; set; }
         }
-
-        #region Sync
-        public object Resolve(IFsContainer container, IEnumerable<IBinding> bindings, Type service)
-        {
+        
+        public Task<object> ResolveAsync(IFsContainer container, IEnumerable<IBinding> bindings, Type service) {
             Guard.ArgumentNotNull(bindings, nameof(bindings));
 
             var context = CreateContext(container, bindings);
 
-            return Resolve(context, service);
-        }
-
-        private object Resolve(ResolveContext context, Type service)
-        {
-            Guard.ArgumentNotNull(context, nameof(context));
-
-            var binding = context.Bindings.FirstOrDefault(b => b.Service == service);
-            if (binding == null)
-            {
-                binding = new Binding(service);
-            }
-
-            var exist = binding.Lifetime?.GetValue();
-            if (exist != null)
-            {
-                return exist;
-            }
-
-            var instance = Build(context, binding);
-
-            if (binding.Lifetime is PerResolveLifetimeManager)
-            {
-                binding.Lifetime = new PerResolveLifetimeManager(instance);
-            }
-
-            binding.Lifetime?.SetValue(instance);
-
-            return instance;
-        }
-
-        private object Build(ResolveContext context, IBinding binding)
-        {
-            Guard.ArgumentNotNull(context, nameof(context));
-            Guard.ArgumentNotNull(binding, nameof(binding));
-
-            if (binding.FactoryFunc != null)
-            {
-                return binding.FactoryFunc(context.Container);
-            }
-
-            if (binding.Concrete != null)
-            {
-                return CreateInstance(context, binding);
-            }
-
-            if (binding.Service.GetConstructor(Type.EmptyTypes) == null)
-            {
-                return CreateInstance(context, binding);
-            }
-
-            return Activator.CreateInstance(binding.Service);
-        }
-        #endregion
-
-        #region Async
-        public async Task<object> ResolveAsync(IFsContainer container, IEnumerable<IBinding> bindings, Type service) {
-            Guard.ArgumentNotNull(bindings, nameof(bindings));
-
-            var context = CreateContext(container, bindings);
-
-            return await ResolveAsync(context, service);
+            return ResolveAsync(context, service);
         }
 
         private async Task<object> ResolveAsync(ResolveContext context, Type service)
@@ -116,19 +53,14 @@ namespace Fs.Container.Resolve
             return instance;
         }
 
-        private async Task<object> BuildAsync(ResolveContext context, IBinding binding)
+        private Task<object> BuildAsync(ResolveContext context, IBinding binding)
         {
             Guard.ArgumentNotNull(context, nameof(context));
             Guard.ArgumentNotNull(binding, nameof(binding));
-
-            if (binding.FactoryFunc != null)
-            {
-                return binding.FactoryFunc(context.Container);
-            }
-
+            
             if (binding.FactoryFuncAsync != null)
             {
-                return await binding.FactoryFuncAsync(context.Container);
+                return binding.FactoryFuncAsync(context.Container);                
             }
 
             if (binding.Concrete != null)
@@ -141,9 +73,8 @@ namespace Fs.Container.Resolve
                 return CreateInstance(context, binding);
             }
 
-            return Activator.CreateInstance(binding.Service);
+            return CreateInstance(binding.Service);
         }
-        #endregion
 
         private ResolveContext CreateContext(IFsContainer container, IEnumerable<IBinding> bindings) {
             foreach (var binding in bindings)
@@ -161,7 +92,7 @@ namespace Fs.Container.Resolve
             };
         }
 
-        private object CreateInstance(ResolveContext context, IBinding binding)
+        private async Task<object> CreateInstance(ResolveContext context, IBinding binding)
         {
             Guard.ArgumentNotNull(context, nameof(context));
             Guard.ArgumentNotNull(binding, nameof(binding));
@@ -178,12 +109,18 @@ namespace Fs.Container.Resolve
                 var parameter = parameters[i];
                 var argument = constructorArguments.ContainsKey(parameter.Name)
                     ? constructorArguments[parameter.Name]
-                    : Resolve(context, parameter.ParameterType);
+                    : await ResolveAsync(context, parameter.ParameterType);
 
                 arguments[i] = argument;
             }
 
             return ctor.Invoke(arguments);
+        }
+
+        private Task<object> CreateInstance(Type service)
+        {
+            var instance = Activator.CreateInstance(service);
+            return Task.FromResult(instance);
         }
     }
 }

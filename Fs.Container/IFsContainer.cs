@@ -9,9 +9,6 @@ namespace Fs.Container
         IFsContainer Parent { get; }
         IFsContainer CreateChildContainer();
 
-        T Resolve<T>();
-        object Resolve(Type type);
-
         Task<T> ResolveAsync<T>();
         Task<object> ResolveAsync(Type type);
     }

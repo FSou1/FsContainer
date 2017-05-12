@@ -16,19 +16,6 @@ namespace Fs.Container.Bindings {
             return Use<T>(new TransientLifetimeManager());
         }
 
-        public void Use(Func<IFsContainer, object> factoryFunc)
-        {
-            Use(factoryFunc, new TransientLifetimeManager());
-        }
-
-        public void Use(Func<IFsContainer, object> factoryFunc, ILifetimeManager lifetimeManager)
-        {
-            Guard.ArgumentNotNull(factoryFunc, nameof(factoryFunc));
-
-            _binding.FactoryFunc = factoryFunc;
-            _binding.Lifetime = lifetimeManager;
-        }
-
         public void UseAsync(Func<IFsContainer, Task<object>> factoryFuncAsync) {
             Guard.ArgumentNotNull(factoryFuncAsync, nameof(factoryFuncAsync));
 

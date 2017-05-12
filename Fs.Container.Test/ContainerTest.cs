@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fs.Container.TestObjects;
+using System.Threading.Tasks;
 
 namespace Fs.Container.Test {
     internal interface ICustomerService {}
@@ -72,7 +73,7 @@ namespace Fs.Container.Test {
     [TestClass]
     public class ContainerTest {
         [TestMethod]
-        public void TestNonExistingParametersDoesNotAffectToInstanceCreatingResolve()
+        public async Task TestNonExistingParametersDoesNotAffectToInstanceCreatingResolve()
         {
             // Act
             const string message = "Hello, world.";
@@ -83,7 +84,7 @@ namespace Fs.Container.Test {
                 .WithConstructorArgument("messageException", message);
 
             // Arrange
-            var instance = container.Resolve<IRule>();
+            var instance = await container.ResolveAsync<IRule>();
 
             // Assert
             Assert.IsNotNull(instance, null);
@@ -91,7 +92,7 @@ namespace Fs.Container.Test {
         }
 
         [TestMethod]
-        public void TestNextWithArgumentOverridePreviousResolve()
+        public async Task TestNextWithArgumentOverridePreviousResolve()
         {
             // Act
             const string msgFirst = "Hello, world.";
@@ -107,7 +108,7 @@ namespace Fs.Container.Test {
                 .WithConstructorArgument("number", numLast);
 
             // Arrange
-            var instance = container.Resolve<IRule>();
+            var instance = await container.ResolveAsync<IRule>();
 
             // Assert
             Assert.IsNotNull(instance, null);
@@ -116,7 +117,7 @@ namespace Fs.Container.Test {
         }
 
         [TestMethod]
-        public void TestWithMultipleConstructorArgumentResolve()
+        public async Task TestWithMultipleConstructorArgumentResolve()
         {
             // Act
             const string argument = "Hello, world.";
@@ -128,7 +129,7 @@ namespace Fs.Container.Test {
                 .WithConstructorArgument("number", number);
 
             // Arrange
-            var instance = container.Resolve<IRule>();
+            var instance = await container.ResolveAsync<IRule>();
 
             // Assert
             Assert.IsNotNull(instance, null);
@@ -137,7 +138,7 @@ namespace Fs.Container.Test {
         }
 
         [TestMethod]
-        public void TestWithSingleConstructorArgumentResolve()
+        public async Task TestWithSingleConstructorArgumentResolve()
         {
             // Act
             const string argument = "Hello, world.";
@@ -147,7 +148,7 @@ namespace Fs.Container.Test {
                 .WithConstructorArgument("message", argument);
 
             // Arrange
-            var instance = container.Resolve<IRule>();
+            var instance = await container.ResolveAsync<IRule>();
 
             // Assert
             Assert.IsNotNull(instance, null);
@@ -156,7 +157,7 @@ namespace Fs.Container.Test {
         }
 
         [TestMethod]
-        public void TestRecursiveMultipleArgumentsResolve()
+        public async Task TestRecursiveMultipleArgumentsResolve()
         {
             // Act
             var container = new FsContainer();
@@ -167,14 +168,14 @@ namespace Fs.Container.Test {
             container.For<IContractRepository>().Use<ContractRepository>();
 
             // Arrange
-            var instance = container.Resolve<ContractController>();
+            var instance = await container.ResolveAsync<ContractController>();
 
             // Assert
             Assert.AreNotEqual(instance, null);
         }
 
         [TestMethod]
-        public void TestRecursiveSingleArgumentResolve()
+        public async Task TestRecursiveSingleArgumentResolve()
         {
             // Act
             var container = new FsContainer();
@@ -182,7 +183,7 @@ namespace Fs.Container.Test {
             container.For<IValidator>().Use<Validator>();
 
             // Arrange
-            var instance = container.Resolve<ICustomerService>();
+            var instance = await container.ResolveAsync<ICustomerService>();
 
             // Assert
             Assert.AreNotEqual(instance, null);
@@ -190,53 +191,53 @@ namespace Fs.Container.Test {
 
         [TestMethod]
         [ExpectedException(typeof(Exception), "Type does not have a parameterless constructor")]
-        public void TestMissingParameterlessConstructorResolve()
+        public async Task TestMissingParameterlessConstructorResolve()
         {
             // Act
             var container = new FsContainer();
 
             // Arrange
-            var instance = container.Resolve<Rule>();
+            var instance = await container.ResolveAsync<Rule>();
 
             // Assert
         }
 
         [TestMethod]
         [ExpectedException(typeof(Exception), "Type does not have a parameterless constructor")]
-        public void TestMissingImplementationBindingResolve()
+        public async Task TestMissingImplementationBindingResolve()
         {
             // Act
             var container = new FsContainer();
 
             // Arrange
-            var validator = container.Resolve<IValidator>();
+            var validator = await container.ResolveAsync<IValidator>();
 
             // Assert
         }
 
         [TestMethod]
-        public void TestForUseByConcreteResolve()
+        public async Task TestForUseByConcreteResolve()
         {
             // Act
             var container = new FsContainer();
             container.For<Validator>().Use<Validator>();
 
             // Arrange
-            var validator = container.Resolve<Validator>();
+            var validator = await container.ResolveAsync<Validator>();
 
             // Assert
             Assert.AreNotEqual(validator, null);
         }
 
         [TestMethod]
-        public void TestForUseByServiceResolve()
+        public async Task TestForUseByServiceResolve()
         {
             // Act
             var container = new FsContainer();
             container.For<IValidator>().Use<Validator>();
 
             // Arrange
-            var validator = container.Resolve<IValidator>();
+            var validator = await container.ResolveAsync<IValidator>();
 
             // Assert
             Assert.AreNotEqual(validator, null);
@@ -265,14 +266,14 @@ namespace Fs.Container.Test {
         }
 
         [TestMethod]
-        public void TestBaseClassInheritanceAreAssignableTypes()
+        public async Task TestBaseClassInheritanceAreAssignableTypes()
         {
             // Act
             var container = new FsContainer();
             container.For<Logger>().Use<DbLogger>();
 
             // Arrange
-            var logger = container.Resolve<Logger>();
+            var logger = await container.ResolveAsync<Logger>();
 
             // Assert
             Assert.IsNotNull(logger);
@@ -280,14 +281,14 @@ namespace Fs.Container.Test {
         }
 
         [TestMethod]
-        public void TestInterfaceInheritanceAreAssignableTypes()
+        public async Task TestInterfaceInheritanceAreAssignableTypes()
         {
             // Act
             var container = new FsContainer();
             container.For<ILogger>().Use<DbLogger>();
 
             // Arrange
-            var logger = container.Resolve<ILogger>();
+            var logger = await container.ResolveAsync<ILogger>();
 
             // Assert
             Assert.IsNotNull(logger);

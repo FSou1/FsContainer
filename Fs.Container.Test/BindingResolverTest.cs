@@ -13,7 +13,7 @@ namespace Fs.Container.Test
     {
         [TestMethod]
         [ExpectedException(typeof(CustomBindingBindingResolver.CustomBindingResolverException))]
-        public void TestRegisteredServicesResolvedWithCustomBindingResolver()
+        public async Task TestRegisteredServicesResolvedWithCustomBindingResolver()
         {
             // Arrange
             var container = new FsContainer
@@ -23,18 +23,13 @@ namespace Fs.Container.Test
             container.For<IValidator>().Use<Validator>();
 
             // Act
-            container.Resolve<IValidator>();
+            await container.ResolveAsync<IValidator>();
         }
 
         internal class CustomBindingBindingResolver : IBindingResolver
         {
             internal class CustomBindingResolverException : Exception { }
-
-            public object Resolve(IFsContainer container, IEnumerable<IBinding> bindings, Type service)
-            {
-                throw new CustomBindingResolverException();
-            }
-
+            
             public Task<object> ResolveAsync(IFsContainer container, IEnumerable<IBinding> bindings, Type service) {
                 throw new CustomBindingResolverException();
             }

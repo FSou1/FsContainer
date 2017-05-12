@@ -30,26 +30,10 @@ namespace Fs.Container {
             this._bindingResolver = new BindingResolver();
         }
         
-        #region Resolve
-        public T Resolve<T>() {
-            return (T)Resolve(typeof (T));
-        }
-        
+        #region Resolve      
         public async Task<T> ResolveAsync<T>()
         {
             return (T)(await ResolveAsync(typeof(T)));
-        }
-
-        public object Resolve(Type type)
-        {
-            var instance = _bindingResolver.Resolve(this, GetBindings(), type);
-
-            if (!_disposeManager.Contains(instance))
-            {
-                _disposeManager.Add(instance);
-            }
-            
-            return instance;
         }
 
         public async Task<object> ResolveAsync(Type type)

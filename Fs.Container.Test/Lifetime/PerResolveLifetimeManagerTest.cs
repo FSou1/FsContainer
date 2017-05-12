@@ -1,6 +1,7 @@
 ﻿using Fs.Container.Lifetime;
 using Fs.Container.TestObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace Fs.Container.Test.Lifetime
 {
@@ -17,10 +18,10 @@ namespace Fs.Container.Test.Lifetime
         }
 
         [TestMethod]
-        public void TestPerResolveInstanceIsSame()
+        public async Task TestPerResolveInstanceIsSame()
         {
             // Arrange
-            var controller = container.Resolve<Controller>();
+            var controller = await container.ResolveAsync<Controller>();
 
             // Assert
             Assert.IsNotNull(controller.Mapper);
@@ -29,11 +30,11 @@ namespace Fs.Container.Test.Lifetime
         }
 
         [TestMethod]
-        public void TestPerResolveInstancesAreNotSame()
+        public async Task TestPerResolveInstancesAreNotSame()
         {
             // Arrange
-            var firstController = container.Resolve<Controller>();
-            var secondController = container.Resolve<Controller>();
+            var firstController = await container.ResolveAsync<Controller>();
+            var secondController = await container.ResolveAsync<Controller>();
             
             // Assert
             Assert.IsNotNull(firstController.Mapper);

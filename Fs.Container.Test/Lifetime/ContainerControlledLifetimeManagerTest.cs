@@ -1,6 +1,7 @@
 ﻿using Fs.Container.Lifetime;
 using Fs.Container.TestObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace Fs.Container.Test.Lifetime {
     [TestClass]
@@ -21,10 +22,10 @@ namespace Fs.Container.Test.Lifetime {
         }
 
         [TestMethod]
-        public void TestContainerControlledLifetimeInstanceAlwaysSame() {
+        public async Task TestContainerControlledLifetimeInstanceAlwaysSame() {
             // Arrange
-            var logger = parent.Resolve<ILogger>();
-            var logger1 = parent.Resolve<ILogger>();
+            var logger = await parent.ResolveAsync<ILogger>();
+            var logger1 = await parent.ResolveAsync<ILogger>();
 
             // Assert
             Assert.IsNotNull(logger);
@@ -33,12 +34,12 @@ namespace Fs.Container.Test.Lifetime {
         }
 
         [TestMethod]
-        public void ParentAndChildResolvesSameContainerControlledInstances()
+        public async Task ParentAndChildResolvesSameContainerControlledInstances()
         {
             // Arrange
-            var logger = parent.Resolve<ILogger>();
-            var logger1 = child1.Resolve<ILogger>();
-            var logger2 = child2.Resolve<ILogger>();
+            var logger = await parent.ResolveAsync<ILogger>();
+            var logger1 = await child1.ResolveAsync<ILogger>();
+            var logger2 = await child2.ResolveAsync<ILogger>();
 
             // Assert
             Assert.IsNotNull(logger);
@@ -50,10 +51,10 @@ namespace Fs.Container.Test.Lifetime {
         }
 
         [TestMethod]
-        public void MultipleResolvedInstanceDisposeOnlyOnce()
+        public async Task MultipleResolvedInstanceDisposeOnlyOnce()
         {
-            var o1 = parent.Resolve<DisposableObject>();
-            var o2 = parent.Resolve<DisposableObject>();
+            var o1 = await parent.ResolveAsync<DisposableObject>();
+            var o2 = await parent.ResolveAsync<DisposableObject>();
 
             parent.Dispose();
             Assert.IsTrue(o1.WasDisposed);

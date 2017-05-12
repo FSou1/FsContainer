@@ -11,10 +11,7 @@ namespace Fs.Container.Syntax
     {
         IBindingWithSyntax<T> Use<T>();
         IBindingWithSyntax<T> Use<T>(ILifetimeManager lifetimeManager);
-
-        void Use(Func<IFsContainer, object> factoryFunc);
-        void Use(Func<IFsContainer, object> factoryFunc, ILifetimeManager lifetimeManager);
-
+        
         void UseAsync(Func<IFsContainer, Task<object>> factoryFuncAsync);
         void UseAsync(Func<IFsContainer, Task<object>> factoryFuncAsync, ILifetimeManager lifetimeManager);
     }

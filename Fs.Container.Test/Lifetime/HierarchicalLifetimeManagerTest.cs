@@ -1,6 +1,7 @@
 ﻿using Fs.Container.Lifetime;
 using Fs.Container.TestObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace Fs.Container.Test.Lifetime
 {
@@ -22,42 +23,42 @@ namespace Fs.Container.Test.Lifetime
         }
 
         [TestMethod]
-        public void ParentResolveActsLikeContainerControlledLifetime()
+        public async Task ParentResolveActsLikeContainerControlledLifetime()
         {
-            var o1 = parent.Resolve<ILogger>();
-            var o2 = parent.Resolve<ILogger>();
+            var o1 = await parent.ResolveAsync<ILogger>();
+            var o2 = await parent.ResolveAsync<ILogger>();
             Assert.AreSame(o1, o2);
         }
 
         [TestMethod]
-        public void ParentAndChildResolveDifferentInstances()
+        public async Task ParentAndChildResolveDifferentInstances()
         {
-            var o1 = parent.Resolve<ILogger>();
-            var o2 = child1.Resolve<ILogger>();
+            var o1 = await parent.ResolveAsync<ILogger>();
+            var o2 = await child1.ResolveAsync<ILogger>();
             Assert.AreNotSame(o1, o2);
         }
 
         [TestMethod]
-        public void ChildResolvesTheSameInstance()
+        public async Task ChildResolvesTheSameInstance()
         {
-            var o1 = child1.Resolve<ILogger>();
-            var o2 = child1.Resolve<ILogger>();
+            var o1 = await child1.ResolveAsync<ILogger>();
+            var o2 = await child1.ResolveAsync<ILogger>();
             Assert.AreSame(o1, o2);
         }
 
         [TestMethod]
-        public void SiblingContainersResolveDifferentInstances()
+        public async Task SiblingContainersResolveDifferentInstances()
         {
-            var o1 = child1.Resolve<ILogger>();
-            var o2 = child2.Resolve<ILogger>();
+            var o1 = await child1.ResolveAsync<ILogger>();
+            var o2 = await child2.ResolveAsync<ILogger>();
             Assert.AreNotSame(o1, o2);
         }
 
         [TestMethod]
-        public void DisposingOfChildContainerDisposesOnlyChildObject()
+        public async Task DisposingOfChildContainerDisposesOnlyChildObject()
         {
-            var o1 = parent.Resolve<DisposableObject>();
-            var o2 = child1.Resolve<DisposableObject>();
+            var o1 = await parent.ResolveAsync<DisposableObject>();
+            var o2 = await child1.ResolveAsync<DisposableObject>();
 
             child1.Dispose();
             Assert.IsFalse(o1.WasDisposed);
@@ -65,10 +66,10 @@ namespace Fs.Container.Test.Lifetime
         }
 
         [TestMethod]
-        public void DisposingOfParentContainerDisposesChildAndParentObject()
+        public async Task DisposingOfParentContainerDisposesChildAndParentObject()
         {
-            var o1 = parent.Resolve<DisposableObject>();
-            var o2 = child1.Resolve<DisposableObject>();
+            var o1 = await parent.ResolveAsync<DisposableObject>();
+            var o2 = await child1.ResolveAsync<DisposableObject>();
 
             parent.Dispose();
             Assert.IsTrue(o1.WasDisposed);
@@ -76,10 +77,10 @@ namespace Fs.Container.Test.Lifetime
         }
 
         [TestMethod]
-        public void MultipleResolvedInstanceDisposeOnlyOnce()
+        public async Task MultipleResolvedInstanceDisposeOnlyOnce()
         {
-            var o1 = parent.Resolve<DisposableObject>();
-            var o2 = parent.Resolve<DisposableObject>();
+            var o1 = await parent.ResolveAsync<DisposableObject>();
+            var o2 = await parent.ResolveAsync<DisposableObject>();
 
             parent.Dispose();
             Assert.IsTrue(o1.WasDisposed);
