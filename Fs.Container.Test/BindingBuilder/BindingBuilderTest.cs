@@ -79,5 +79,31 @@ namespace Fs.Container.Test.BindingBuilder
             Assert.AreEqual(second.Connection.ConnectionString, "sql_connection_string");
             Assert.AreSame(first, second);
         }
+
+        [TestMethod]
+        public async Task TestMultiThreadContainerUseExistingObjectFromLifetimeManagerWithFactoryMethodAsync()
+        {
+            // Arrange
+            container
+                .For<IRepository>()
+                .UseAsync(async ctx => await ResolveRepositoryAsync(ctx), new ContainerControlledLifetimeManager());
+
+            // Act
+            var instances = await Task.WhenAll(new[]
+            {
+                container.ResolveAsync<IRepository>(),
+                container.ResolveAsync<IRepository>()
+            });
+
+            var first = instances[0];
+            var second = instances[1];
+
+            // Arrange
+            Assert.AreEqual(first.Connection.IsOpen, true);
+            Assert.AreEqual(first.Connection.ConnectionString, "sql_connection_string");
+            Assert.AreEqual(second.Connection.IsOpen, true);
+            Assert.AreEqual(second.Connection.ConnectionString, "sql_connection_string");
+            Assert.AreSame(first, second);
+        }
     }
 }

@@ -28,7 +28,7 @@ namespace Fs.Container.TestObjects {
                 IsOpen = true;
             }
 
-            return Task.CompletedTask;
+            return Task.Delay(10);
         }
     }
 
