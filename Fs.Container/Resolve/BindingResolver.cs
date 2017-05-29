@@ -10,37 +10,32 @@ namespace Fs.Container.Resolve
 {
     public class BindingResolver : IBindingResolver
     {
-        public class ResolveContext
-        {
-            public IFsContainer Container { get; set; }
-            public IEnumerable<IBinding> Bindings { get; set; }
-        }
-
+        private readonly object _locker = new object();
+        
         public object Resolve(IFsContainer container, IEnumerable<IBinding> bindings, Type service)
         {
-            Guard.ArgumentNotNull(bindings, nameof(bindings));
+            lock (_locker) {
+                Guard.ArgumentNotNull(bindings, nameof(bindings));
 
-            foreach (var binding in bindings)
-            {
-                if (binding.Lifetime is PerResolveLifetimeManager)
-                {
-                    binding.Lifetime = new PerResolveLifetimeManager();
+                foreach (var binding in bindings) {
+                    if (binding.Lifetime is PerResolveLifetimeManager) {
+                        binding.Lifetime = new PerResolveLifetimeManager();
+                    }
                 }
+
+                var context = new ResolveContext {
+                    Container = container,
+                    Bindings = bindings
+                };
+
+                return Resolve(context, service);
             }
-
-            var context = new ResolveContext
-            {
-                Container = container,
-                Bindings = bindings
-            };
-
-            return Resolve(context, service);
         }
 
         private object Resolve(ResolveContext context, Type service)
         {
             Guard.ArgumentNotNull(context, nameof(context));
-
+            
             var binding = context.Bindings.FirstOrDefault(b => b.Service == service);
             if(binding == null)
             {
@@ -111,6 +106,12 @@ namespace Fs.Container.Resolve
             }
 
             return ctor.Invoke(arguments);
+        }
+
+        internal class ResolveContext
+        {
+            internal IFsContainer Container { get; set; }
+            internal IEnumerable<IBinding> Bindings { get; set; }
         }
     }
 }
