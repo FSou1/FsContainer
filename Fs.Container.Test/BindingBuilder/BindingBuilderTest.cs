@@ -77,8 +77,14 @@ namespace Fs.Container.Test.BindingBuilder
 
             // Act
             var instances = await Task.WhenAll(
-                Task.Run(() => container.Resolve<IRepository>()), 
-                Task.Run(() => container.Resolve<IRepository>())
+                Task.Run(() => {
+                    Task.Delay(10);
+                    return container.Resolve<IRepository>();
+                }),
+                Task.Run(() => {
+                    Task.Delay(10);
+                    return container.Resolve<IRepository>();
+                })
             );
 
             var first = instances[0];

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Fs.Container.Bindings;
 using Fs.Container.Lifetime;
 using Fs.Container.Utility;
@@ -37,7 +39,7 @@ namespace Fs.Container.Resolve
             Guard.ArgumentNotNull(context, nameof(context));
             
             var binding = context.Bindings.FirstOrDefault(b => b.Service == service);
-            if(binding == null)
+            if (binding == null)
             {
                 binding = new Binding(service);
             }

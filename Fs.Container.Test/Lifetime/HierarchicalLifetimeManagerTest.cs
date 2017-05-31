@@ -1,4 +1,5 @@
-﻿using Fs.Container.Lifetime;
+﻿using System.Threading.Tasks;
+using Fs.Container.Lifetime;
 using Fs.Container.TestObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -7,59 +8,148 @@ namespace Fs.Container.Test.Lifetime
     [TestClass]
     public class HierarchicalLifetimeManagerTest
     {
-        private IFsContainer child1;
-        private IFsContainer child2;
-        private IFsContainer parent;
-        
+        private IFsContainer container;
+        private IFsContainer child;
+        private IFsContainer nestedChild;
+
         public HierarchicalLifetimeManagerTest()
         {
-            parent = new FsContainer();
-            parent.For<ILogger>().Use<Logger>(new HierarchicalLifetimeManager());
-            parent.For<DisposableObject>()
-                .Use<DisposableObject>(new HierarchicalLifetimeManager());
-            child1 = parent.CreateChildContainer();
-            child2 = parent.CreateChildContainer();
+            container = new FsContainer();
+            container.For<ILogger>().Use<Logger>(new HierarchicalLifetimeManager());
+            child = container.CreateChildContainer();
+            nestedChild = container.CreateChildContainer();
         }
 
         [TestMethod]
-        public void ParentResolveActsLikeContainerControlledLifetime()
+        public void TestParentResolveActsLikeContainerControlledLifetime()
         {
-            var o1 = parent.Resolve<ILogger>();
-            var o2 = parent.Resolve<ILogger>();
+            var o1 = container.Resolve<ILogger>();
+            var o2 = container.Resolve<ILogger>();
             Assert.AreSame(o1, o2);
         }
 
         [TestMethod]
-        public void ParentAndChildResolveDifferentInstances()
+        public async Task TestMultiThreadParentResolveActsLikeContainerControlledLifetime()
         {
-            var o1 = parent.Resolve<ILogger>();
-            var o2 = child1.Resolve<ILogger>();
+            // Act
+            var instances = await Task.WhenAll(
+                Task.Run(() => {
+                    Task.Delay(10);
+                    return container.Resolve<ILogger>();
+                }),
+                Task.Run(() => {
+                    Task.Delay(10);
+                    return container.Resolve<ILogger>();
+                })
+            );
+
+            var o1 = instances[0];
+            var o2 = instances[1];
+
+            // Assert
+            Assert.AreSame(o1, o2);
+        }
+
+        [TestMethod]
+        public void TestParentAndChildResolveDifferentInstances()
+        {
+            var o1 = container.Resolve<ILogger>();
+            var o2 = child.Resolve<ILogger>();
             Assert.AreNotSame(o1, o2);
         }
 
         [TestMethod]
-        public void ChildResolvesTheSameInstance()
+        public async Task TestMultiThreadParentAndChildResolveDifferentInstances()
         {
-            var o1 = child1.Resolve<ILogger>();
-            var o2 = child1.Resolve<ILogger>();
+            // Act
+            var instances = await Task.WhenAll(
+                Task.Run(() => {
+                    Task.Delay(10);
+                    return container.Resolve<ILogger>();
+                }),
+                Task.Run(() => {
+                    Task.Delay(10);
+                    return child.Resolve<ILogger>();
+                })
+            );
+
+            var o1 = instances[0];
+            var o2 = instances[1];
+
+            // Assert
+            Assert.AreNotSame(o1, o2);
+        }
+
+        [TestMethod]
+        public void TestChildResolvesTheSameInstance()
+        {
+            // Act
+            var o1 = child.Resolve<ILogger>();
+            var o2 = child.Resolve<ILogger>();
+
+            // Assert
             Assert.AreSame(o1, o2);
         }
 
         [TestMethod]
-        public void SiblingContainersResolveDifferentInstances()
+        public async Task TestMultiThreadChildResolvesTheSameInstance()
         {
-            var o1 = child1.Resolve<ILogger>();
-            var o2 = child2.Resolve<ILogger>();
+            // Act
+            var instances = await Task.WhenAll(
+                Task.Run(() => {
+                    Task.Delay(10);
+                    return child.Resolve<ILogger>();
+                }),
+                Task.Run(() => {
+                    Task.Delay(10);
+                    return child.Resolve<ILogger>();
+                })
+            );
+
+            var o1 = instances[0];
+            var o2 = instances[1];
+
+            // Assert
+            Assert.AreSame(o1, o2);
+        }
+
+        [TestMethod]
+        public void TestSiblingContainersResolveDifferentInstances()
+        {
+            var o1 = child.Resolve<ILogger>();
+            var o2 = nestedChild.Resolve<ILogger>();
+            Assert.AreNotSame(o1, o2);
+        }
+
+        [TestMethod]
+        public async Task TestMultiThreadSiblingContainersResolveDifferentInstances()
+        {
+            // Act
+            var instances = await Task.WhenAll(
+                Task.Run(() => {
+                    Task.Delay(10);
+                    return child.Resolve<ILogger>();
+                }),
+                Task.Run(() => {
+                    Task.Delay(10);
+                    return nestedChild.Resolve<ILogger>();
+                })
+            );
+
+            var o1 = instances[0];
+            var o2 = instances[1];
+
+            // Assert
             Assert.AreNotSame(o1, o2);
         }
 
         [TestMethod]
         public void DisposingOfChildContainerDisposesOnlyChildObject()
         {
-            var o1 = parent.Resolve<DisposableObject>();
-            var o2 = child1.Resolve<DisposableObject>();
+            var o1 = container.Resolve<DisposableObject>();
+            var o2 = child.Resolve<DisposableObject>();
 
-            child1.Dispose();
+            child.Dispose();
             Assert.IsFalse(o1.WasDisposed);
             Assert.IsTrue(o2.WasDisposed);
         }
@@ -67,10 +157,10 @@ namespace Fs.Container.Test.Lifetime
         [TestMethod]
         public void DisposingOfParentContainerDisposesChildAndParentObject()
         {
-            var o1 = parent.Resolve<DisposableObject>();
-            var o2 = child1.Resolve<DisposableObject>();
+            var o1 = container.Resolve<DisposableObject>();
+            var o2 = child.Resolve<DisposableObject>();
 
-            parent.Dispose();
+            container.Dispose();
             Assert.IsTrue(o1.WasDisposed);
             Assert.IsTrue(o2.WasDisposed);
         }
@@ -78,10 +168,10 @@ namespace Fs.Container.Test.Lifetime
         [TestMethod]
         public void MultipleResolvedInstanceDisposeOnlyOnce()
         {
-            var o1 = parent.Resolve<DisposableObject>();
-            var o2 = parent.Resolve<DisposableObject>();
+            var o1 = container.Resolve<DisposableObject>();
+            var o2 = container.Resolve<DisposableObject>();
 
-            parent.Dispose();
+            container.Dispose();
             Assert.IsTrue(o1.WasDisposed);
             Assert.IsTrue(o2.WasDisposed);
             Assert.AreEqual(o1.DisposeCount, 1);

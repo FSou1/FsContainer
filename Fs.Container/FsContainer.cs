@@ -26,7 +26,7 @@ namespace Fs.Container {
             }
             
             this._disposeManager = new DisposeManager();
-            this._bindingResolver = new BindingResolver();
+            this._bindingResolver = parent?.BindingResolver ?? new BindingResolver();
         }
         
         #region Resolve

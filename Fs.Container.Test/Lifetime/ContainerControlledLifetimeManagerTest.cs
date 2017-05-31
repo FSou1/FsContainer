@@ -1,30 +1,22 @@
-﻿using Fs.Container.Lifetime;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Fs.Container.Lifetime;
 using Fs.Container.TestObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fs.Container.Test.Lifetime {
     [TestClass]
     public class ContainerControlledLifetimeManagerTest {
-        private IFsContainer child1;
-        private IFsContainer child2;
-        private IFsContainer parent;
-
-        public ContainerControlledLifetimeManagerTest()
-        {
-            parent = new FsContainer();
-            parent.For<ILogger>()
-                .Use<Logger>(new ContainerControlledLifetimeManager());
-            parent.For<DisposableObject>()
-                .Use<DisposableObject>(new ContainerControlledLifetimeManager());
-            child1 = parent.CreateChildContainer();
-            child2 = parent.CreateChildContainer();
-        }
-
         [TestMethod]
         public void TestContainerControlledLifetimeInstanceAlwaysSame() {
+            var container = new FsContainer();
+
+            container.For<ILogger>()
+                .Use<Logger>(new ContainerControlledLifetimeManager());
+
             // Arrange
-            var logger = parent.Resolve<ILogger>();
-            var logger1 = parent.Resolve<ILogger>();
+            var logger = container.Resolve<ILogger>();
+            var logger1 = container.Resolve<ILogger>();
 
             // Assert
             Assert.IsNotNull(logger);
@@ -33,10 +25,48 @@ namespace Fs.Container.Test.Lifetime {
         }
 
         [TestMethod]
-        public void ParentAndChildResolvesSameContainerControlledInstances()
+        public async Task TestMultiThreadContainerControlledLifetimeInstanceAlwaysSame()
         {
             // Arrange
-            var logger = parent.Resolve<ILogger>();
+            var container = new FsContainer();
+            container
+                .For<ILogger>()
+                .Use<Logger>(new ContainerControlledLifetimeManager());
+
+            // Act
+            var instances = await Task.WhenAll(
+                Task.Run(() => {
+                    Task.Delay(10);
+                    return container.Resolve<ILogger>();
+                }),
+                Task.Run(() => {
+                    Task.Delay(10);
+                    return container.Resolve<ILogger>();
+                })
+            );
+
+            var logger = instances[0];
+            var logger1 = instances[1];
+
+            // Assert
+            Assert.IsNotNull(logger);
+            Assert.IsNotNull(logger1);
+            Assert.AreSame(logger, logger1);
+        }
+
+        [TestMethod]
+        public void TestParentAndChildResolvesSameContainerControlledInstances()
+        {
+            // Arrange
+            var container = new FsContainer();
+            container
+                .For<ILogger>()
+                .Use<Logger>(new ContainerControlledLifetimeManager());
+            var child1 = container.CreateChildContainer();
+            var child2 = container.CreateChildContainer();
+
+            // Arrange
+            var logger = container.Resolve<ILogger>();
             var logger1 = child1.Resolve<ILogger>();
             var logger2 = child2.Resolve<ILogger>();
 
@@ -50,12 +80,61 @@ namespace Fs.Container.Test.Lifetime {
         }
 
         [TestMethod]
-        public void MultipleResolvedInstanceDisposeOnlyOnce()
+        public async Task TestMultiThreadParentAndChildResolvesSameContainerControlledInstances()
         {
-            var o1 = parent.Resolve<DisposableObject>();
-            var o2 = parent.Resolve<DisposableObject>();
+            // Arrange
+            var container = new FsContainer();
+            container
+                .For<ILogger>()
+                .Use<Logger>(new ContainerControlledLifetimeManager());
+            var child1 = container.CreateChildContainer();
+            var child2 = container.CreateChildContainer();
 
-            parent.Dispose();
+            // Arrange
+            var instances = await Task.WhenAll(
+                Task.Run(() => {
+                    Task.Delay(10);
+                    return container.Resolve<ILogger>();
+                }),
+                Task.Run(() => {
+                    Task.Delay(10);
+                    return child1.Resolve<ILogger>();
+                }),
+                Task.Run(() => {
+                    Task.Delay(10);
+                    return child2.Resolve<ILogger>();
+                })
+            );
+
+            var logger = instances[0];
+            var logger1 = instances[1];
+            var logger2 = instances[2];
+
+            // Assert
+            Assert.IsNotNull(logger);
+            Assert.IsNotNull(logger1);
+            Assert.IsNotNull(logger2);
+            Assert.AreSame(logger, logger1);
+            Assert.AreSame(logger, logger2);
+            Assert.AreSame(logger1, logger2);
+        }
+
+        [TestMethod]
+        public void TestMultipleResolvedInstanceDisposeOnlyOnce()
+        {
+            // Arrange
+            var container = new FsContainer();
+
+            container
+                .For<DisposableObject>()
+                .Use<DisposableObject>(new ContainerControlledLifetimeManager());
+
+            // Act
+            var o1 = container.Resolve<DisposableObject>();
+            var o2 = container.Resolve<DisposableObject>();
+
+            // Assert
+            container.Dispose();
             Assert.IsTrue(o1.WasDisposed);
             Assert.IsTrue(o2.WasDisposed);
             Assert.AreEqual(o1.DisposeCount, 1);
