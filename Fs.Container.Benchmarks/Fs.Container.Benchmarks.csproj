@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Fs.Container.Core\Fs.Container.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="BenchmarkDotNet">
+      <HintPath>..\..\..\Users\Maksim\.nuget\packages\benchmarkdotnet\0.10.8\lib\netcoreapp1.1\BenchmarkDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="BenchmarkDotNet.Core">
+      <HintPath>..\..\..\Users\Maksim\.nuget\packages\benchmarkdotnet.core\0.10.8\lib\netcoreapp1.1\BenchmarkDotNet.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
