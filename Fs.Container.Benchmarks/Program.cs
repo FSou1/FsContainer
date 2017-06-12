@@ -8,9 +8,9 @@ namespace Fs.Container.Benchmarks
         static void Main(string[] args)
         {
             BenchmarkSwitcher switcher = new BenchmarkSwitcher(new[] {
-                typeof(SingletonBenchmark),
-                typeof(TransientBenchmark)
+                typeof(FsContainerBenchmark)
             });
+
             switcher.Run();
         }
     }

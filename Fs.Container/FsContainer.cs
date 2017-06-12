@@ -38,11 +38,11 @@ namespace Fs.Container {
         {
             var instance = _bindingResolver.Resolve(this, GetBindings(), type);
 
-            if (!_disposeManager.Contains(instance))
+            if (instance is IDisposable && !_disposeManager.Contains(instance))
             {
                 _disposeManager.Add(instance);
             }
-            
+
             return instance;
         }
 
