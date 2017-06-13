@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
-    <Version>1.2.0</Version>
+    <Version>1.2.1.0</Version>
     <Authors>FSou1</Authors>
     <PackageProjectUrl>https://github.com/FSou1/FsContainer</PackageProjectUrl>
     <RepositoryUrl>https://github.com/FSou1/FsContainer</RepositoryUrl>

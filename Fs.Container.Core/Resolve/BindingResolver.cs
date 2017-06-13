@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -11,7 +12,10 @@ namespace Fs.Container.Core.Resolve
     public class BindingResolver : IBindingResolver
     {
         private readonly object _locker = new object();
-        
+
+        private readonly IDictionary<Type, Tuple<ConstructorInfo, ParameterInfo[]>> _ctorCache = 
+            new ConcurrentDictionary<Type, Tuple<ConstructorInfo, ParameterInfo[]>>();
+
         public object Resolve(IFsContainer container, IEnumerable<IBinding> bindings, Type service)
         {
             lock (_locker) {
@@ -62,9 +66,6 @@ namespace Fs.Container.Core.Resolve
 
         private object Build(ResolveContext context, IBinding binding)
         {
-            Guard.ArgumentNotNull(context, nameof(context));
-            Guard.ArgumentNotNull(binding, nameof(binding));
-
             if (binding.FactoryFunc != null)
             {
                 return binding.FactoryFunc(context.Container);
@@ -85,24 +86,27 @@ namespace Fs.Container.Core.Resolve
 
         private object CreateInstance(ResolveContext context, IBinding binding)
         {
-            Guard.ArgumentNotNull(context, nameof(context));
-            Guard.ArgumentNotNull(binding, nameof(binding));
-
             var concrete = binding.Concrete ?? binding.Service;
             var constructorArguments = binding.Arguments ?? new Dictionary<string, object>();
 
-            var ctor = new ConstructorScorer(concrete, constructorArguments).GetConstructor();
+            if (!_ctorCache.ContainsKey(concrete))
+            {
+                var constructor = new ConstructorScorer(concrete, constructorArguments).GetConstructor();
+                _ctorCache[concrete] = Tuple.Create(constructor, constructor.GetParameters());
+            }
 
-            var parameters = ctor.GetParameters();
+            var entry = _ctorCache[concrete];
+            var ctor = entry.Item1;
+            var parameters = entry.Item2;
             var arguments = new object[parameters.Length];
             for (var i = 0; i < parameters.Length; i++)
             {
                 var parameter = parameters[i];
-                var argument = constructorArguments.ContainsKey(parameter.Name)
-                    ? constructorArguments[parameter.Name]
-                    : Resolve(context, parameter.ParameterType);
 
-                arguments[i] = argument;
+                if (!constructorArguments.TryGetValue(parameter.Name, out arguments[i]))
+                {
+                    arguments[i] = Resolve(context, parameter.ParameterType);
+                }
             }
 
             return ctor.Invoke(arguments);
