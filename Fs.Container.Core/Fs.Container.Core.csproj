@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netstandard1.5</TargetFramework>
     <Version>1.2.2.0</Version>
     <Authors>FSou1</Authors>
     <PackageProjectUrl>https://github.com/FSou1/FsContainer</PackageProjectUrl>

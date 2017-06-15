@@ -17,6 +17,7 @@ namespace Fs.Container.Core
 
         public ConstructorInfo GetConstructor() {
             var constructor = _concrete
+                .GetTypeInfo()
                 .GetConstructors()
                 .OrderByDescending(Score)
                 .FirstOrDefault();
