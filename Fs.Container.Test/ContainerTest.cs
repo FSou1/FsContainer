@@ -11,6 +11,11 @@ namespace Fs.Container.Test {
         }
     }
 
+    internal class Credential
+    {
+        private Credential() { }
+    }
+
     internal interface IRule {
         string GetMessage();
         int GetNumber();
@@ -208,8 +213,10 @@ namespace Fs.Container.Test {
             // Act
             var container = new FsContainer();
 
+            container.For<Credential>().Use<Credential>();
+
             // Arrange
-            var validator = container.Resolve<IValidator>();
+            var instance = container.Resolve<Credential>();
 
             // Assert
         }

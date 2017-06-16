@@ -40,6 +40,10 @@ namespace Fs.Container.Test.Core {
         }
     }
 
+    internal class Credential {
+        private Credential() { }
+    }
+
     interface IContractService {}
     internal class ContractService : IContractService {
         private readonly IContractRepository _contractRepository;
@@ -196,8 +200,10 @@ namespace Fs.Container.Test.Core {
             // Act
             var container = new FsContainer();
 
+            container.For<Credential>().Use<Credential>();
+
             // Arrange
-            var instance = container.Resolve<Rule>();
+            var instance = container.Resolve<Credential>();
 
             // Assert
         }
