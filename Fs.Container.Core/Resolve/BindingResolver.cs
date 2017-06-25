@@ -15,10 +15,10 @@ namespace Fs.Container.Core.Resolve
     {
         private readonly object _locker = new object();
 
-        private readonly IDictionary<Type, Tuple<ConstructorInfo, ParameterInfo[]>> _ctorCache = 
+        private readonly ConcurrentDictionary<Type, Tuple<ConstructorInfo, ParameterInfo[]>> _ctorCache = 
             new ConcurrentDictionary<Type, Tuple<ConstructorInfo, ParameterInfo[]>>();
 
-        private readonly IDictionary<Type, Func<object[], object>> _activatorCache =
+        private readonly ConcurrentDictionary<Type, Func<object[], object>> _activatorCache =
             new ConcurrentDictionary<Type, Func<object[], object>>();
 
         public object Resolve(IFsContainer container, IEnumerable<IBinding> bindings, Type service)
@@ -94,16 +94,12 @@ namespace Fs.Container.Core.Resolve
             var concrete = binding.Concrete ?? binding.Service;
             var constructorArguments = binding.Arguments ?? new Dictionary<string, object>();
 
-            if (!_ctorCache.ContainsKey(concrete)) {
-                _ctorCache[concrete] = GetCtor(concrete, constructorArguments);
-            }
+            var ctorCacheEntry = _ctorCache.GetOrAdd(concrete, x => GetCtor(concrete, constructorArguments));
 
-            var ctor = _ctorCache[concrete].Item1;
-            var parameters = _ctorCache[concrete].Item2;
+            var ctor = ctorCacheEntry.Item1;
+            var parameters = ctorCacheEntry.Item2;
 
-            if (!_activatorCache.ContainsKey(concrete)) {
-                _activatorCache[concrete] = GetActivator(ctor, parameters);
-            }
+            var activator = _activatorCache.GetOrAdd(concrete, x => GetActivator(ctor, parameters));
 
             var arguments = new object[parameters.Length];
 
@@ -116,7 +112,7 @@ namespace Fs.Container.Core.Resolve
                 }
             }
 
-            return _activatorCache[concrete].Invoke(arguments);
+            return activator.Invoke(arguments);
         }
 
         private Tuple<ConstructorInfo, ParameterInfo[]> GetCtor(Type concrete, IDictionary<string, object> arguments) {
