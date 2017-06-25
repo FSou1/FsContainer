@@ -14,11 +14,11 @@ namespace Fs.Container.Resolve
     {
         private readonly object _locker = new object();
 
-        private readonly ConcurrentDictionary<Type, Tuple<ConstructorInfo, ParameterInfo[]>> _ctorCache =
-            new ConcurrentDictionary<Type, Tuple<ConstructorInfo, ParameterInfo[]>>();
+        private readonly IDictionary<Type, Tuple<ConstructorInfo, ParameterInfo[]>> _ctorCache =
+            new Dictionary<Type, Tuple<ConstructorInfo, ParameterInfo[]>>();
 
-        private readonly ConcurrentDictionary<Type, Func<object[], object>> _activatorCache =
-            new ConcurrentDictionary<Type, Func<object[], object>>();
+        private readonly IDictionary<Type, Func<object[], object>> _activatorCache =
+            new Dictionary<Type, Func<object[], object>>();
 
         public object Resolve(IFsContainer container, IEnumerable<IBinding> bindings, Type service)
         {
@@ -97,12 +97,20 @@ namespace Fs.Container.Resolve
             var concrete = binding.Concrete ?? binding.Service;
             var constructorArguments = binding.Arguments ?? new Dictionary<string, object>();
 
-            var ctorCacheEntry = _ctorCache.GetOrAdd(concrete, x => GetCtor(concrete, constructorArguments));
+            if (!_ctorCache.ContainsKey(concrete))
+            {
+                _ctorCache[concrete] = GetCtor(concrete, constructorArguments);
+            }
+            var ctorCacheEntry = _ctorCache[concrete];
 
             var ctor = ctorCacheEntry.Item1;
             var parameters = ctorCacheEntry.Item2;
 
-            var activator = _activatorCache.GetOrAdd(concrete, x => GetActivator(ctor, parameters));
+            if (!_activatorCache.ContainsKey(concrete))
+            {
+                _activatorCache[concrete] = GetActivator(ctor, parameters);
+            }
+            var activator = _activatorCache[concrete];
 
             var arguments = new object[parameters.Length];
 
