@@ -3,27 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fs.Container.Test", "Fs.Container.Test\Fs.Container.Test.csproj", "{01F84A34-C3EC-42E2-80C6-9C7192CA2384}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fs.Container.Web", "Fs.Container.Web\Fs.Container.Web.csproj", "{295C2971-20D8-4984-A107-16ED6D33CFB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fs.Container", "Fs.Container\Fs.Container.csproj", "{8AABB444-9D57-4889-9F95-8D18EBFA620A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fs.Container.Web.Test", "Fs.Container.Web.Test\Fs.Container.Web.Test.csproj", "{D8F307EA-D345-41E2-8866-0AB61FAB9486}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fs.Container.Web", "Fs.Container.Web\Fs.Container.Web.csproj", "{295C2971-20D8-4984-A107-16ED6D33CFB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fs.Container.TestObjects", "Fs.Container.TestObjects\Fs.Container.TestObjects.csproj", "{61691805-3BF4-4860-B060-6075322BE92C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fs.Container.Web.Test", "Fs.Container.Web.Test\Fs.Container.Web.Test.csproj", "{D8F307EA-D345-41E2-8866-0AB61FAB9486}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fs.Container.Core", "Fs.Container.Core\Fs.Container.Core.csproj", "{65700EF5-55AE-4DFD-9628-2509D00D82BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fs.Container.TestObjects", "Fs.Container.TestObjects\Fs.Container.TestObjects.csproj", "{61691805-3BF4-4860-B060-6075322BE92C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fs.Container.Test.Core", "Fs.Container.Test.Core\Fs.Container.Test.Core.csproj", "{28BB9D9A-A45E-4760-93EB-7FB1168427A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fs.Container.Core", "Fs.Container.Core\Fs.Container.Core.csproj", "{65700EF5-55AE-4DFD-9628-2509D00D82BF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fs.Container.Test.Core", "Fs.Container.Test.Core\Fs.Container.Test.Core.csproj", "{28BB9D9A-A45E-4760-93EB-7FB1168427A5}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{6442D8A6-70F9-421C-B93D-1FB877075765}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4.6.1", "4.6.1", "{5208651C-6A50-4A5C-A8B1-B83739624117}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", "{862B413A-8B86-4C24-83D3-340C380AA4D6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fs.Container.Benchmarks", "Fs.Container.Benchmarks\Fs.Container.Benchmarks.csproj", "{1D458E95-968B-443C-9E8E-F0D9CD40D616}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fs.Container.Benchmarks", "Fs.Container.Benchmarks\Fs.Container.Benchmarks.csproj", "{1D458E95-968B-443C-9E8E-F0D9CD40D616}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,14 +21,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{01F84A34-C3EC-42E2-80C6-9C7192CA2384}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{01F84A34-C3EC-42E2-80C6-9C7192CA2384}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{01F84A34-C3EC-42E2-80C6-9C7192CA2384}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{01F84A34-C3EC-42E2-80C6-9C7192CA2384}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8AABB444-9D57-4889-9F95-8D18EBFA620A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8AABB444-9D57-4889-9F95-8D18EBFA620A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8AABB444-9D57-4889-9F95-8D18EBFA620A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8AABB444-9D57-4889-9F95-8D18EBFA620A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{295C2971-20D8-4984-A107-16ED6D33CFB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{295C2971-20D8-4984-A107-16ED6D33CFB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{295C2971-20D8-4984-A107-16ED6D33CFB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -67,14 +49,7 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{01F84A34-C3EC-42E2-80C6-9C7192CA2384} = {5208651C-6A50-4A5C-A8B1-B83739624117}
-		{8AABB444-9D57-4889-9F95-8D18EBFA620A} = {5208651C-6A50-4A5C-A8B1-B83739624117}
-		{295C2971-20D8-4984-A107-16ED6D33CFB0} = {5208651C-6A50-4A5C-A8B1-B83739624117}
-		{D8F307EA-D345-41E2-8866-0AB61FAB9486} = {5208651C-6A50-4A5C-A8B1-B83739624117}
-		{61691805-3BF4-4860-B060-6075322BE92C} = {5208651C-6A50-4A5C-A8B1-B83739624117}
-		{65700EF5-55AE-4DFD-9628-2509D00D82BF} = {6442D8A6-70F9-421C-B93D-1FB877075765}
-		{28BB9D9A-A45E-4760-93EB-7FB1168427A5} = {6442D8A6-70F9-421C-B93D-1FB877075765}
-		{1D458E95-968B-443C-9E8E-F0D9CD40D616} = {862B413A-8B86-4C24-83D3-340C380AA4D6}
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3DD3DA83-F2FB-465E-A8C6-DD92E9676CEB}
 	EndGlobalSection
 EndGlobal

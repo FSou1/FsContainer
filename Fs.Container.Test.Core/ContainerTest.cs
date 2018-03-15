@@ -1,6 +1,6 @@
 ﻿using System;
 using Fs.Container.Core;
-using Fs.Container.Test.Core.TestObjects;
+using Fs.Container.TestObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fs.Container.Test.Core {

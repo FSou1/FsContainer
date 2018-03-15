@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Fs.Container.Core;
 using Fs.Container.Core.Bindings;
 using Fs.Container.Core.Resolve;
-using Fs.Container.Test.Core.TestObjects;
+using Fs.Container.TestObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fs.Container.Test.Core

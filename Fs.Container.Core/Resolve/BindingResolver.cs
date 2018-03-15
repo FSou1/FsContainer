@@ -81,7 +81,7 @@ namespace Fs.Container.Core.Resolve
                 return CreateInstance(context, binding);
             }
 
-            if(binding.Service.GetConstructor(Type.EmptyTypes) == null)
+            if(binding.Service.GetTypeInfo().GetConstructor(Type.EmptyTypes) == null)
             {
                 return CreateInstance(context, binding);
             }

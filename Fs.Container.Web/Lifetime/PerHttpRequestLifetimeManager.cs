@@ -1,4 +1,4 @@
-﻿using Fs.Container.Lifetime;
+﻿using Fs.Container.Core.Lifetime;
 using System;
 using System.Web;
 
