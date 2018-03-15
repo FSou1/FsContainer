@@ -2,6 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Net.Http.Headers;
 using System.Reflection;
 using Fs.Container.Core.Bindings;
 using Fs.Container.Core.Lifetime;
@@ -14,7 +16,10 @@ namespace Fs.Container.Core.Resolve
         private readonly object _locker = new object();
 
         private readonly IDictionary<Type, Tuple<ConstructorInfo, ParameterInfo[]>> _ctorCache = 
-            new ConcurrentDictionary<Type, Tuple<ConstructorInfo, ParameterInfo[]>>();
+            new Dictionary<Type, Tuple<ConstructorInfo, ParameterInfo[]>>();
+
+        private readonly IDictionary<Type, Func<object[], object>> _activatorCache =
+            new Dictionary<Type, Func<object[], object>>();
 
         public object Resolve(IFsContainer container, IEnumerable<IBinding> bindings, Type service)
         {
@@ -88,19 +93,25 @@ namespace Fs.Container.Core.Resolve
         {
             var concrete = binding.Concrete ?? binding.Service;
             var constructorArguments = binding.Arguments ?? new Dictionary<string, object>();
-
-            if (!_ctorCache.ContainsKey(concrete))
+                        
+            if(!_ctorCache.ContainsKey(concrete))
             {
-                var constructor = new ConstructorScorer(concrete, constructorArguments).GetConstructor();
-                _ctorCache[concrete] = Tuple.Create(constructor, constructor.GetParameters());
+                _ctorCache[concrete] = GetCtor(concrete, constructorArguments);
             }
+            var ctorCacheEntry = _ctorCache[concrete];
 
-            var entry = _ctorCache[concrete];
-            var ctor = entry.Item1;
-            var parameters = entry.Item2;
-            var arguments = new object[parameters.Length];
-            for (var i = 0; i < parameters.Length; i++)
+            var ctor = ctorCacheEntry.Item1;
+            var parameters = ctorCacheEntry.Item2;
+
+            if(!_activatorCache.ContainsKey(concrete))
             {
+                _activatorCache[concrete] = GetActivator(ctor, parameters);
+            }
+            var activator = _activatorCache[concrete];
+
+            var arguments = new object[parameters.Length];
+
+            for (var i = 0; i < parameters.Length; i++) {
                 var parameter = parameters[i];
 
                 if (!constructorArguments.TryGetValue(parameter.Name, out arguments[i]))
@@ -109,7 +120,28 @@ namespace Fs.Container.Core.Resolve
                 }
             }
 
-            return ctor.Invoke(arguments);
+            return activator.Invoke(arguments);
+        }
+
+        private Tuple<ConstructorInfo, ParameterInfo[]> GetCtor(Type concrete, IDictionary<string, object> arguments) {
+            var constructor = new ConstructorScorer(concrete, arguments).GetConstructor();
+            return Tuple.Create(constructor, constructor.GetParameters());
+        }
+
+        private Func<object[], object> GetActivator(ConstructorInfo ctor, ParameterInfo[] parameters) {
+            var p = Expression.Parameter(typeof(object[]), "args");
+            var args = new Expression[parameters.Length];
+
+            for (var i = 0; i < parameters.Length; i++)
+            {
+                var a = Expression.ArrayAccess(p, Expression.Constant(i));
+                args[i] = Expression.Convert(a, parameters[i].ParameterType);
+            }
+
+            var b = Expression.New(ctor, args);
+            var l = Expression.Lambda<Func<object[], object>>(b, p);
+
+            return l.Compile();
         }
 
         internal class ResolveContext
