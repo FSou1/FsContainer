@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Fs.Container.Lifetime;
+using Fs.Container.Core;
+using Fs.Container.Core.Lifetime;
 using Fs.Container.TestObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -77,11 +78,13 @@ namespace Fs.Container.Test.BindingBuilder
 
             // Act
             var instances = await Task.WhenAll(
-                Task.Run(() => {
+                Task.Run(() =>
+                {
                     Task.Delay(10);
                     return container.Resolve<IRepository>();
                 }),
-                Task.Run(() => {
+                Task.Run(() =>
+                {
                     Task.Delay(10);
                     return container.Resolve<IRepository>();
                 })

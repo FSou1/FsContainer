@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Fs.Container.Bindings;
-using Fs.Container.Resolve;
+using Fs.Container.Core;
+using Fs.Container.Core.Bindings;
+using Fs.Container.Core.Resolve;
 using Fs.Container.TestObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -24,7 +25,7 @@ namespace Fs.Container.Test
             // Act
             container.Resolve<IValidator>();
         }
-        
+
         internal class CustomBindingBindingResolver : IBindingResolver
         {
             internal class CustomBindingResolverException : Exception { }

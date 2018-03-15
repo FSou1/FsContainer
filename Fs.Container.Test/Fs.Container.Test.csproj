@@ -63,13 +63,13 @@
     <Compile Include="UtilityTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Fs.Container.Core\Fs.Container.Core.csproj">
+      <Project>{65700EF5-55AE-4DFD-9628-2509D00D82BF}</Project>
+      <Name>Fs.Container.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Fs.Container.TestObjects\Fs.Container.TestObjects.csproj">
       <Project>{61691805-3bf4-4860-b060-6075322be92c}</Project>
       <Name>Fs.Container.TestObjects</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Fs.Container\Fs.Container.csproj">
-      <Project>{8AABB444-9D57-4889-9F95-8D18EBFA620A}</Project>
-      <Name>Fs.Container</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

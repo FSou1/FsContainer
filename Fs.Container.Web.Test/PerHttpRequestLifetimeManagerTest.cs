@@ -8,6 +8,7 @@ using Fs.Container.Web.Lifetime;
 using System.Web;
 using System.IO;
 using Fs.Container.TestObjects;
+using Fs.Container.Core;
 
 namespace Fs.Container.Web.Test
 {

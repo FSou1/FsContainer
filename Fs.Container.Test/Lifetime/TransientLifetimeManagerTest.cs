@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Fs.Container.Lifetime;
+using Fs.Container.Core;
+using Fs.Container.Core.Lifetime;
 using Fs.Container.TestObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

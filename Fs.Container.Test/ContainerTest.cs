@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fs.Container.TestObjects;
+using Fs.Container.Core;
 
 namespace Fs.Container.Test {
     internal interface ICustomerService {}
