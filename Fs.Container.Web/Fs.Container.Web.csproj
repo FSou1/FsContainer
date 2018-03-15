@@ -2,17 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
-    <Version>1.2.4.0</Version>
-    <Authors>FSou1</Authors>
-    <PackageProjectUrl>https://github.com/FSou1/FsContainer</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/FSou1/FsContainer</RepositoryUrl>
-    <PackageTags>FSContainer IoC DI container dependency injection inversion control</PackageTags>
-    <Description>Lightweight IoC container</Description>
-    <Company>Fs.Container Project Contributors</Company>
-    <Product>Fs.Container.Web: Lightweight dependency injection for .NET</Product>
-    <AssemblyVersion>1.2.4.0</AssemblyVersion>
-    <FileVersion>1.2.4.0</FileVersion>
-    <RootNamespace>Fs.Container.Web</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
